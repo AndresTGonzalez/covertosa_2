@@ -29,9 +29,7 @@ class CustomersPage extends StatelessWidget {
           create: (_) => SyncProvider(),
         ),
         ChangeNotifierProvider(
-          create: (_) => OrderProvider(
-            product: Products(),
-          ),
+          create: (_) => OrderProvider(),
         ),
       ],
       child: _Content(isCrud: isCrud),
@@ -100,17 +98,16 @@ class _Content extends StatelessWidget {
               itemBuilder: (context, index) {
                 return GestureDetector(
                   onTap: !isCrud
-                      ? () {
-                          print('Seleccionar cliente');
+                      ? () async {
                           orderProvider.customer =
                               customersProvider.customers[index];
+                          // Creo la orden
+                          await orderProvider.createOrder();
                           // Me muevo a la pantalla de productos
+                          // ignore: use_build_context_synchronously
                           Navigator.pushNamed(context, PRODUCTS_ROUTE_NC);
                         }
                       : () {
-                          print('Editar cliente');
-                          // Imprimir el cliente seleccionado
-                          print(customersProvider.customers[index].toJson());
                           Navigator.pushNamed(
                             context,
                             CUSTOMER_PAGE_ROUTE,

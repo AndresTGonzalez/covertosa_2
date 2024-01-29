@@ -27,6 +27,9 @@ class ProductsPage extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => SyncProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => OrderProvider(),
+        ),
       ],
       child: _Content(
         isCrud: isCrud,
@@ -48,6 +51,7 @@ class _Content extends StatelessWidget {
   Widget build(BuildContext context) {
     final productProvider = Provider.of<ProductsProvider>(context);
     final syncProvider = Provider.of<SyncProvider>(context);
+    final orderProvider = Provider.of<OrderProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -62,6 +66,23 @@ class _Content extends StatelessWidget {
             },
             icon: const Icon(Icons.refresh),
           ),
+          isCrud
+              ? Container()
+              : IconButton(
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      ORDER_PAGE_ROUTE,
+                    );
+                  },
+                  icon: Badge(
+                    label: Text(
+                      orderProvider.ordersDetails.length.toString(),
+                    ),
+                    backgroundColor: AppColors.successDark,
+                    child: const Icon(Icons.shopping_cart),
+                  ),
+                ),
           IconButton(
             onPressed: isCrud
                 ? () {
@@ -100,13 +121,9 @@ class _Content extends StatelessWidget {
                       productProvider: productProvider,
                       product: productProvider.products[index],
                     ),
-                    create: (_) => OrderProvider(
-                      product: productProvider.products[index],
-                    ),
+                    create: (_) => OrderProvider(),
                   ),
-                  create: (_) => OrderProvider(
-                    product: productProvider.products[index],
-                  ),
+                  create: (_) => OrderProvider(),
                 );
               },
             ),
@@ -139,6 +156,8 @@ class _ListTileProducto extends StatelessWidget {
               );
             }
           : () {
+              orderProvider.product = product;
+              orderProvider.createOrderDetail();
               Navigator.pushNamed(
                 context,
                 SELECT_PRODUCT_ROUTE,

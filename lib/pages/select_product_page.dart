@@ -18,10 +18,37 @@ class SelectProductPage extends StatelessWidget {
     final Products product =
         ModalRoute.of(context)!.settings.arguments as Products;
 
+    return ChangeNotifierProvider(
+      child: _Content(
+        product: product,
+        isOrder: isOrder,
+      ),
+      create: (_) => OrderProvider(),
+    );
+  }
+}
+
+// ignore: must_be_immutable
+class _Content extends StatelessWidget {
+  final Products product;
+  bool isOrder;
+
+  _Content({
+    super.key,
+    required this.product,
+    required this.isOrder,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final orderProvider = Provider.of<OrderProvider>(context);
+
     return Scaffold(
       floatingActionButton: isOrder
           ? FloatingActionButton(
-              onPressed: () {},
+              onPressed: () {
+                orderProvider.sendOrder();
+              },
               child: const Icon(Icons.add),
             )
           : null,
@@ -196,9 +223,7 @@ class _OrderFunctions extends StatelessWidget {
       child: _OrderInfo(
         product: product,
       ),
-      create: (_) => OrderProvider(
-        product: product,
-      ),
+      create: (_) => OrderProvider(),
     );
   }
 }
