@@ -139,7 +139,6 @@ class _ListTileProducto extends StatelessWidget {
               );
             }
           : () {
-              orderProvider.createOrderDetail();
               Navigator.pushNamed(
                 context,
                 SELECT_PRODUCT_ROUTE,

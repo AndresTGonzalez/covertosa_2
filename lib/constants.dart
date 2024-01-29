@@ -11,6 +11,7 @@ const String PRODUCTS_ROUTE_NC = '/products_nc';
 const String SELECT_PRODUCT_ROUTE = '/select_product';
 const String SELECT_PRODUCT_ROUTE_NO = '/select_product_no';
 const String CUSTOMER_PAGE_ROUTE = '/customer_page';
+const String ORDER_PAGE_ROUTE = '/order_page';
 
 //Rutas Api Rest
 const String HOST_URL = "http://174.138.68.90/api/public/";

@@ -1,3 +1,4 @@
+export 'package:covertosa_2/pages/order_page.dart';
 export 'package:covertosa_2/pages/customer_page.dart';
 export 'package:covertosa_2/pages/select_product_page.dart';
 export 'package:covertosa_2/pages/products_page.dart';

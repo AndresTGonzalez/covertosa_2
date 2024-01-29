@@ -1,10 +1,12 @@
-import 'package:covertosa_2/constants.dart';
+import 'package:covertosa_2/local_services/database_helper.dart';
 import 'package:covertosa_2/models/customers.dart';
 import 'package:covertosa_2/models/orders.dart';
 import 'package:covertosa_2/models/products.dart';
 import 'package:flutter/material.dart';
 
 class OrderProvider extends ChangeNotifier {
+  final DatabaseHelper _databaseHelper = DatabaseHelper();
+
   Customers _customer = Customers();
   Orders _order = Orders();
   List<OrdersDetails> _ordersDetails = [];
@@ -46,22 +48,14 @@ class OrderProvider extends ChangeNotifier {
 
   void addBoxToOrder() {
     _ordersDetail.amount = _ordersDetail.amount! + 1;
-    _recalculateValues();
     notifyListeners();
   }
 
   void removeBoxToOrder() {
     if (_ordersDetail.amount! > 1) {
       _ordersDetail.amount = _ordersDetail.amount! - 1;
-      _recalculateValues();
       notifyListeners();
     }
-  }
-
-  void _recalculateValues() {
-    _ordersDetail.subtotal = _product.price! * _ordersDetail.amount!;
-    _ordersDetail.iva = _ordersDetail.subtotal! * IVA_VALUE;
-    _ordersDetail.total = _ordersDetail.amount! * _product.price!;
   }
 
   void resetBoxQuantity() {
@@ -69,17 +63,60 @@ class OrderProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void createOrderDetail() {
-    _ordersDetail.product = _product.shortname;
-
-    _ordersDetail.price = _product.price;
-    _ordersDetail.total = _product.price;
-    _ordersDetail.id_product = _product.id;
-    _ordersDetail.id_order = _order.id;
-    _ordersDetail.product_code = _product.code;
-    _ordersDetail.stock = _product.stock;
-    _ordersDetail.iva = _product.price! * IVA_VALUE;
-    _ordersDetail.subtotal = _product.price! * IVA_VALUE;
-    _ordersDetail.amount = 1;
+  // TODO: Agregar logica para crear la orden en memoria
+  void createOrder() {
+    _order.code_customer = _customer.cod;
+    _order.date_order = DateTime.now().toString();
   }
+
+  // TODO: Agregar logica para agregar un producto a la orden
+  void addOrderDetail() async {
+    var dbClient = await _databaseHelper.db;
+  }
+
+  // TODO: Agregar logica para remover un producto de la orden
+  void removeOrderDetail() async {
+    var dbClient = await _databaseHelper.db;
+  }
+
+  // TODO: Agregar logica para calcular el subtotal del detalle de la orden
+  void calculateDetailSubtotal() async {
+    var dbClient = await _databaseHelper.db;
+  }
+
+  // TODO: Agregar logica para calcular los totales de la orden
+  // Total, IVA, Subtotal
+  void calculateOrderTotals() async {
+    var dbClient = await _databaseHelper.db;
+  }
+
+  /* 
+  Metodos para manejar la logica en la base de datos local
+  */
+  // TODO: Agregar logica para guardar la orden en la base de datos local
+  void createLocalOrder() {}
+
+  // TODO: Agregar logica para guardar el detalle de la orden en la base de datos local
+  void createLocalOrderDetail() {}
+
+  // TODO: Agregar logica para obtener la orden de la base de datos local
+  void getLocalOrder() {}
+
+  // TODO: Agregar logica para obtener los detalles de la orden de la base de datos local
+  void getLocalOrderDetails() {}
+
+  // TODO: Agregar logica para eliminar la orden de la base de datos local
+  void deleteLocalOrder() {}
+
+  // TODO: Agregar logica para eliminar un detalle de la orden de la base de datos local
+  void deleteLocalOrderDetail() {}
+
+  // TODO: Agregar logica para eliminar todos los detalles de la orden de la base de datos local
+  void deleteLocalOrderDetails() {}
+
+  /* 
+  Metodos para manejar la logicas en la base de datos remota
+  */
+  // TODO: Agregar logica para guardar la orden en la base de datos remota con todos sus detalles
+  void sendOrder() {}
 }

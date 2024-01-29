@@ -40,11 +40,9 @@ class Orders {
   late List<Orders> data;
 
   factory Orders.fromJson(Map<String, dynamic> json) => Orders(
-        // id: json['id'],
         id: (json['id'] is String) ? int.parse(json['id']) : json['id'],
         code_customer: json['code_customer'],
         date_order: json['date_order'],
-        // process: json['process'],
         process: (json['process'] is String)
             ? int.parse(json['process'])
             : json['process'],

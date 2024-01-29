@@ -12,11 +12,8 @@ final Map<String, WidgetBuilder> routes = {
   CUSTOMERS_ROUTE_NC: (context) => CustomersPage(isCrud: false),
   PRODUCTS_ROUTE: (context) => ProductsPage(isCrud: true),
   PRODUCTS_ROUTE_NC: (context) => ProductsPage(isCrud: false),
-  SELECT_PRODUCT_ROUTE: (context) => SelectProductPage(
-        isOrder: true,
-      ),
-  SELECT_PRODUCT_ROUTE_NO: (context) => SelectProductPage(
-        isOrder: false,
-      ),
+  SELECT_PRODUCT_ROUTE: (context) => SelectProductPage(isOrder: true),
+  SELECT_PRODUCT_ROUTE_NO: (context) => SelectProductPage(isOrder: false),
   CUSTOMER_PAGE_ROUTE: (context) => const CustomerPage(),
+  ORDER_PAGE_ROUTE: (context) => const OrderPage(),
 };
