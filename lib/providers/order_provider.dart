@@ -112,7 +112,7 @@ class OrderProvider extends ChangeNotifier {
     // Verificar si el amount es null
     _ordersDetail.amount ??= 1;
     _calculateOrderDetailTotals();
-    // _addDetailTotalsToOrder();
+    _addDetailTotalsToOrder();
     // await _createLocalOrderDetail();
     _addOrderDetailMemory();
     resetBoxQuantity();

@@ -12,15 +12,18 @@ class OrderPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final orderProvider = Provider.of<OrderProvider>(context);
     return Scaffold(
-      body: Center(
-        child: MaterialButton(
-          onPressed: () {
-            // print(orderProvider.orders);
-            print(orderProvider.order.toJson());
-          },
-          child: Text('Ordenes'),
-        ),
+      appBar: AppBar(
+        title: const Text('Orden'),
       ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          print(orderProvider.order.toJson());
+        },
+        // child: const Icon(Icons.send),
+        label: const Text('Enviar'),
+        icon: const Icon(Icons.send),
+      ),
+      body: Container(),
     );
   }
 }
