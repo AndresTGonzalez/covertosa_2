@@ -3,7 +3,6 @@ import 'package:covertosa_2/local_services/database_helper.dart';
 import 'package:covertosa_2/models/customers.dart';
 import 'package:covertosa_2/models/orders.dart';
 import 'package:covertosa_2/models/products.dart';
-// import 'package:covertosa_2/models/trade_routes.dart';
 import 'package:flutter/material.dart';
 
 class OrderProvider extends ChangeNotifier {
@@ -13,7 +12,6 @@ class OrderProvider extends ChangeNotifier {
   Orders _order = Orders();
   List<OrdersDetails> _ordersDetails = [];
   OrdersDetails _ordersDetail = OrdersDetails();
-  // List<TradeRoutes> _tradeRoutes = [];
   Products _product = Products();
 
   // Constructor

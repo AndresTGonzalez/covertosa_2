@@ -1,5 +1,6 @@
 // TODO: Crear la pagina de la orden
 
+import 'package:covertosa_2/design/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -14,16 +15,158 @@ class OrderPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Orden'),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(
+              Icons.delete,
+            ),
+          )
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          print(orderProvider.order.toJson());
+          print(orderProvider.customer.toJson());
         },
         // child: const Icon(Icons.send),
         label: const Text('Enviar'),
         icon: const Icon(Icons.send),
       ),
-      body: Container(),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height * 0.15,
+              width: double.infinity,
+              // color: Colors.red,
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Cliente: ',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '${orderProvider.customer.name}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Identificación: ',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          '${orderProvider.customer.document}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Row(
+                      children: [
+                        const Text(
+                          'Dirección: ',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 250,
+                          child: Text(
+                            '${orderProvider.customer.address}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height * 0.6,
+              width: double.infinity,
+              // color: Colors.blue,
+              child: ListView.builder(
+                itemCount: orderProvider.ordersDetails.length,
+                itemBuilder: (BuildContext context, int index) {
+                  return ListTile(
+                    subtitle: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                            'Cantidad: ${orderProvider.ordersDetails[index].amount}'),
+                        Text(
+                            'Subtotal: \$${orderProvider.ordersDetails[index].subtotal!.toStringAsFixed(2)}')
+                      ],
+                    ),
+                    title:
+                        Text('${orderProvider.ordersDetails[index].product}'),
+                    trailing: IconButton(
+                      onPressed: () {},
+                      icon: Icon(
+                        Icons.remove_circle,
+                        color: AppColors.danger,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height * 0.15,
+              width: double.infinity,
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Subtotal: \$${orderProvider.order.subtotal!.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                  Text(
+                    'IVA: \$${orderProvider.order.iva!.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                  Text(
+                    'Total: \$${orderProvider.order.total!.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
