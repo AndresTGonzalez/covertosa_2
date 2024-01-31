@@ -32,24 +32,20 @@ class Products {
   late List<Products> data;
 
   factory Products.fromJson(Map<String, dynamic> json) => Products(
-        // id: int.parse(json['id']),
-        // id: json['id'],
         id: (json['id'] is String) ? int.parse(json['id']) : json['id'],
         code: json['code'],
         shortname: json['shortname'],
         price: num.parse(json['price'].toString()),
         category: json['category'],
-        // taxable: int.parse(json['taxable']),
-        // taxable: json['taxable'],
         taxable: (json['taxable'] is String)
             ? int.parse(json['taxable'])
             : json['taxable'],
-        // stock: int.parse(json['stock']),
-        // stock: json['stock'],
         stock: (json['stock'] is String)
             ? int.parse(json['stock'])
             : json['stock'],
-        present: json['present'],
+        present: (json['present'] is String)
+            ? int.parse(json['present'])
+            : json['present'],
       );
 
   Map<String, dynamic> toJson() => {

@@ -3,7 +3,6 @@
 import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/design/app_colors.dart';
 import 'package:covertosa_2/models/customers.dart';
-import 'package:covertosa_2/models/products.dart';
 import 'package:covertosa_2/providers/customers_provider.dart';
 import 'package:covertosa_2/providers/providers.dart';
 import 'package:covertosa_2/search/search_delegate_customers.dart';
@@ -27,9 +26,6 @@ class CustomersPage extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (_) => SyncProvider(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => OrderProvider(),
         ),
       ],
       child: _Content(isCrud: isCrud),
@@ -103,6 +99,7 @@ class _Content extends StatelessWidget {
                               customersProvider.customers[index];
                           // Creo la orden
                           await orderProvider.createOrder();
+                          print(orderProvider.order.toJson());
                           // Me muevo a la pantalla de productos
                           // ignore: use_build_context_synchronously
                           Navigator.pushNamed(context, PRODUCTS_ROUTE_NC);

@@ -1,8 +1,6 @@
 import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/design/cards_decoration.dart';
 import 'package:covertosa_2/design/design.dart';
-import 'package:covertosa_2/providers/auth_provider.dart';
-import 'package:covertosa_2/providers/job_routes_provider.dart';
 import 'package:covertosa_2/providers/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -125,6 +123,7 @@ class _RouteDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final jobRoutesProvider = Provider.of<JobRoutesProvider>(context);
+    // final orderProvider = Provider.of<OrderProvider>(context);
 
     return AlertDialog(
       title: Column(

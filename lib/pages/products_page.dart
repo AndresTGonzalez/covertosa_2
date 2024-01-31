@@ -27,9 +27,6 @@ class ProductsPage extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => SyncProvider(),
         ),
-        ChangeNotifierProvider(
-          create: (_) => OrderProvider(),
-        ),
       ],
       child: _Content(
         isCrud: isCrud,
@@ -114,16 +111,10 @@ class _Content extends StatelessWidget {
           : ListView.builder(
               itemCount: productProvider.products.length,
               itemBuilder: (context, index) {
-                return ChangeNotifierProvider(
-                  child: ChangeNotifierProvider(
-                    child: _ListTileProducto(
-                      isCrud: isCrud,
-                      productProvider: productProvider,
-                      product: productProvider.products[index],
-                    ),
-                    create: (_) => OrderProvider(),
-                  ),
-                  create: (_) => OrderProvider(),
+                return _ListTileProducto(
+                  isCrud: isCrud,
+                  productProvider: productProvider,
+                  product: productProvider.products[index],
                 );
               },
             ),
@@ -157,7 +148,6 @@ class _ListTileProducto extends StatelessWidget {
             }
           : () {
               orderProvider.product = product;
-              orderProvider.createOrderDetail();
               Navigator.pushNamed(
                 context,
                 SELECT_PRODUCT_ROUTE,

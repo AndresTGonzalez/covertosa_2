@@ -18,12 +18,9 @@ class SelectProductPage extends StatelessWidget {
     final Products product =
         ModalRoute.of(context)!.settings.arguments as Products;
 
-    return ChangeNotifierProvider(
-      child: _Content(
-        product: product,
-        isOrder: isOrder,
-      ),
-      create: (_) => OrderProvider(),
+    return _Content(
+      product: product,
+      isOrder: isOrder,
     );
   }
 }
@@ -46,8 +43,12 @@ class _Content extends StatelessWidget {
     return Scaffold(
       floatingActionButton: isOrder
           ? FloatingActionButton(
-              onPressed: () {
-                orderProvider.sendOrder();
+              onPressed: () async {
+                orderProvider.product = product;
+                await orderProvider.createOrderDetail();
+                // print(orderProvider.ordersDetails[0].toJson());
+                print(orderProvider.ordersDetails.length);
+                Navigator.pop(context);
               },
               child: const Icon(Icons.add),
             )
@@ -219,11 +220,8 @@ class _OrderFunctions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      child: _OrderInfo(
-        product: product,
-      ),
-      create: (_) => OrderProvider(),
+    return _OrderInfo(
+      product: product,
     );
   }
 }
@@ -291,46 +289,47 @@ class _OrderInfo extends StatelessWidget {
               ),
             ],
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Unidades: 1',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Row(
-                children: [
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.remove_circle,
-                      color: AppColors.danger,
-                      size: 30,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.add_circle,
-                      color: AppColors.success,
-                      size: 30,
-                    ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: Icon(
-                      Icons.restart_alt_sharp,
-                      color: AppColors.danger,
-                      size: 30,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
+          // Aqui esta la funcion para las unidades aun no se como aplicarla
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //   children: [
+          //     const Text(
+          //       'Unidades: 1',
+          //       style: TextStyle(
+          //         fontSize: 18,
+          //         fontWeight: FontWeight.bold,
+          //       ),
+          //     ),
+          //     Row(
+          //       children: [
+          //         IconButton(
+          //           onPressed: () {},
+          //           icon: Icon(
+          //             Icons.remove_circle,
+          //             color: AppColors.danger,
+          //             size: 30,
+          //           ),
+          //         ),
+          //         IconButton(
+          //           onPressed: () {},
+          //           icon: Icon(
+          //             Icons.add_circle,
+          //             color: AppColors.success,
+          //             size: 30,
+          //           ),
+          //         ),
+          //         IconButton(
+          //           onPressed: () {},
+          //           icon: Icon(
+          //             Icons.restart_alt_sharp,
+          //             color: AppColors.danger,
+          //             size: 30,
+          //           ),
+          //         ),
+          //       ],
+          //     ),
+          //   ],
+          // ),
         ],
       ),
     );
