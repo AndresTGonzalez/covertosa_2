@@ -19,6 +19,7 @@ class ProductsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final orderProvider = Provider.of<OrderProvider>(context);
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
@@ -28,8 +29,35 @@ class ProductsPage extends StatelessWidget {
           create: (_) => SyncProvider(),
         ),
       ],
-      child: _Content(
-        isCrud: isCrud,
+      child: WillPopScope(
+        onWillPop: () async {
+          if (!(await orderProvider.hasOrdersToSend())) {
+            return true;
+          } else {
+            // ignore: use_build_context_synchronously
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text('Órdenes pendientes'),
+                content: const Text(
+                    'Tienes órdenes pendientes. No puedes retroceder.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Aceptar'),
+                  ),
+                ],
+              ),
+            );
+            // Impedir el regreso
+            return false;
+          }
+        },
+        child: _Content(
+          isCrud: isCrud,
+        ),
       ),
     );
   }
@@ -148,6 +176,7 @@ class _ListTileProducto extends StatelessWidget {
             }
           : () {
               orderProvider.product = product;
+              orderProvider.inicializateOrderDetail(amount: 1);
               Navigator.pushNamed(
                 context,
                 SELECT_PRODUCT_ROUTE,
@@ -162,7 +191,10 @@ class _ListTileProducto extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Codigo: ${product.code}'),
-            Text('Stock: ${product.stock}'),
+            // Text('Stock: ${product.stock}'),
+            // Salga con cajas y unidades
+            Text(
+                'Stock: ${(product.stock! / product.present!).toStringAsFixed(2)} cajas | ${product.stock! % product.present!} unidades'),
           ],
         ),
       ),

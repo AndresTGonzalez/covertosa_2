@@ -45,9 +45,10 @@ class _Content extends StatelessWidget {
           ? FloatingActionButton(
               onPressed: () async {
                 orderProvider.product = product;
-                await orderProvider.createOrderDetail();
-                // print(orderProvider.ordersDetails[0].toJson());
-                print(orderProvider.ordersDetails.length);
+                await orderProvider.createOrderDetail(
+                  amountBox: orderProvider.amountBox,
+                );
+                // ignore: use_build_context_synchronously
                 Navigator.pop(context);
               },
               child: const Icon(Icons.add),
@@ -168,6 +169,30 @@ class _Content extends StatelessWidget {
                             Row(
                               children: [
                                 const Text(
+                                  'Unidades por caja: ',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
+                                  child: Text(
+                                    '${product.present!}',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            Row(
+                              children: [
+                                const Text(
                                   'Stock: ',
                                   style: TextStyle(
                                     fontSize: 18,
@@ -176,9 +201,9 @@ class _Content extends StatelessWidget {
                                 ),
                                 SizedBox(
                                   width:
-                                      MediaQuery.of(context).size.width * 0.5,
+                                      MediaQuery.of(context).size.width * 0.75,
                                   child: Text(
-                                    product.stock.toString(),
+                                    'Cajas: ${(product.stock! / product.present!).toStringAsFixed(2)} | Unidades: ${product.stock! % product.present!}',
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: const TextStyle(
@@ -242,12 +267,60 @@ class _OrderInfo extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          orderProvider.product.present! > 1
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Unidades: ${orderProvider.amountUnits}',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            orderProvider.removeUnitsToOrder();
+                          },
+                          icon: Icon(
+                            Icons.remove_circle,
+                            color: AppColors.danger,
+                            size: 30,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            orderProvider.addUnitsToOrder();
+                          },
+                          icon: Icon(
+                            Icons.add_circle,
+                            color: AppColors.success,
+                            size: 30,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: () {
+                            orderProvider.resetUnitsQuantity();
+                          },
+                          icon: Icon(
+                            Icons.restart_alt_sharp,
+                            color: AppColors.danger,
+                            size: 30,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                )
+              : const SizedBox(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 // 'Cajas: {$orderProvider.ordersDetail.amount}',
-                'Cajas: ${orderProvider.ordersDetail.amount}',
+                'Cajas: ${orderProvider.amountBox}',
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -289,6 +362,50 @@ class _OrderInfo extends StatelessWidget {
               ),
             ],
           ),
+          // orderProvider.product.present! > 1
+          //     ? Row(
+          //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          //         children: [
+          //           Text(
+          //             'Presentación: ${orderProvider.product.present}',
+          //             style: const TextStyle(
+          //               fontSize: 18,
+          //               fontWeight: FontWeight.bold,
+          //             ),
+          //           ),
+          //           Row(
+          //             children: [
+          //               IconButton(
+          //                 onPressed: () {},
+          //                 icon: Icon(
+          //                   Icons.remove_circle,
+          //                   color: AppColors.danger,
+          //                   size: 30,
+          //                 ),
+          //               ),
+          //               IconButton(
+          //                 onPressed: () {},
+          //                 icon: Icon(
+          //                   Icons.add_circle,
+          //                   color: AppColors.success,
+          //                   size: 30,
+          //                 ),
+          //               ),
+          //               IconButton(
+          //                 onPressed: () {
+          //                   print(orderProvider.product.present!);
+          //                 },
+          //                 icon: Icon(
+          //                   Icons.restart_alt_sharp,
+          //                   color: AppColors.danger,
+          //                   size: 30,
+          //                 ),
+          //               ),
+          //             ],
+          //           ),
+          //         ],
+          //       )
+          //     : const SizedBox(),
           // Aqui esta la funcion para las unidades aun no se como aplicarla
           // Row(
           //   mainAxisAlignment: MainAxisAlignment.spaceBetween,

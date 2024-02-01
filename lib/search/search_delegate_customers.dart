@@ -1,10 +1,16 @@
+import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/models/customers.dart';
 import 'package:covertosa_2/providers/customers_provider.dart';
+import 'package:covertosa_2/providers/order_provider.dart';
 import 'package:flutter/material.dart';
 
 class SearchDelegateCustomers extends SearchDelegate {
   final CustomersProvider customersProvider = CustomersProvider();
   List<Customers> _filter = [];
+  bool isOrder;
+  final OrderProvider orderProvider = OrderProvider();
+
+  SearchDelegateCustomers({required this.isOrder});
 
   @override
   String? get searchFieldLabel => ' Buscar cliente';
@@ -68,7 +74,25 @@ class SearchDelegateCustomers extends SearchDelegate {
     return ListView.builder(
       itemCount: _filter.length,
       itemBuilder: (context, index) {
-        return _listTileCustomer(customer: _filter[index]);
+        return GestureDetector(
+          onTap: !isOrder
+              ? () async {
+                  orderProvider.customer = customersProvider.customers[index];
+                  await orderProvider.createOrder();
+                  // ignore: use_build_context_synchronously
+                  Navigator.pushNamed(context, PRODUCTS_ROUTE_NC);
+                }
+              : () {
+                  Navigator.pushNamed(
+                    context,
+                    CUSTOMER_PAGE_ROUTE,
+                    arguments: customersProvider.customers[index],
+                  );
+                },
+          child: _listTileCustomer(
+            customer: _filter[index],
+          ),
+        );
       },
     );
   }

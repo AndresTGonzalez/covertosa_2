@@ -6,5 +6,6 @@ class QueriesMenuItems {
   static List<MenuItem> items = [
     MenuItem('Clientes', CUSTOMERS_ROUTE, Icons.people),
     MenuItem('Productos', PRODUCTS_ROUTE, Icons.inventory),
+    MenuItem('Órdenes', ORDERS_ROUTE, Icons.inventory_rounded),
   ];
 }

@@ -35,7 +35,7 @@ class _Content extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: customer.id == null
             ? () async {
-                await customerProvider.addCustomerLocal(
+                await customerProvider.addCustomer(
                   customer,
                 );
                 // ignore: use_build_context_synchronously

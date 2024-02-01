@@ -35,7 +35,7 @@ class _App extends StatelessWidget {
         useMaterial3: true,
       ),
       routes: routes,
-      initialRoute: HOME_ROUTE,
+      initialRoute: CHECK_AUTH_ROUTE,
     );
   }
 }

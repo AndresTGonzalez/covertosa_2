@@ -16,4 +16,6 @@ final Map<String, WidgetBuilder> routes = {
   SELECT_PRODUCT_ROUTE_NO: (context) => SelectProductPage(isOrder: false),
   CUSTOMER_PAGE_ROUTE: (context) => const CustomerPage(),
   ORDER_PAGE_ROUTE: (context) => const OrderPage(),
+  ORDERS_ROUTE: (context) => const OrdersPage(),
+  CHECK_AUTH_ROUTE: (context) => const CheckAuthPage(),
 };

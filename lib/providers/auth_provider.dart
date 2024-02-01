@@ -202,4 +202,8 @@ class AuthProvider extends ChangeNotifier {
     _name = await storage.read(key: 'name') ?? '';
     notifyListeners();
   }
+
+  Future<String> isLogged() async {
+    return await storage.read(key: 'user') ?? '';
+  }
 }

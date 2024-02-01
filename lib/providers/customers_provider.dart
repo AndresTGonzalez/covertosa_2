@@ -1,7 +1,10 @@
+import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/local_services/database_helper.dart';
 import 'package:covertosa_2/models/customers.dart';
 import 'package:flutter/material.dart';
 import 'package:location/location.dart';
+
+import 'package:http/http.dart' as http;
 
 class CustomersProvider extends ChangeNotifier {
   List<Customers> _customers = [];
@@ -86,6 +89,11 @@ class CustomersProvider extends ChangeNotifier {
 
   // Funciones para el CRUD
 
+  Future addCustomer(Customers customer) async {
+    await addCustomerLocal(customer);
+    await sendCustomer(customer);
+  }
+
   Future addCustomerLocal(Customers customer) async {
     isLoading = true;
     notifyListeners();
@@ -151,5 +159,29 @@ class CustomersProvider extends ChangeNotifier {
     locationData = await location.getLocation();
 
     return locationData;
+  }
+
+  // Funciones para manejar la logica en la base de datos remota
+  Future sendCustomer(Customers customer) async {
+    isLoading = true;
+    notifyListeners();
+    LocationData? locationData = await _getLocation();
+    customer.lat = locationData!.latitude.toString();
+    customer.lng = locationData.longitude.toString();
+    print(customer.toJson());
+    // final resp = await http.post(
+    //   Uri.parse(SET_CUSTOMERS),
+    //   body: customer.toJson(),
+    // );
+    // if (resp.statusCode == 200) {
+    //   print('se inserto');
+    //   isLoading = false;
+    //   notifyListeners();
+    //   return true;
+    // } else {
+    //   isLoading = false;
+    //   notifyListeners();
+    //   return false;
+    // }
   }
 }

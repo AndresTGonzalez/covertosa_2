@@ -76,7 +76,9 @@ class _Content extends StatelessWidget {
             onPressed: () {
               showSearch(
                 context: context,
-                delegate: SearchDelegateCustomers(),
+                delegate: SearchDelegateCustomers(
+                  isOrder: isCrud,
+                ),
               );
             },
             icon: const Icon(Icons.search),
@@ -97,10 +99,7 @@ class _Content extends StatelessWidget {
                       ? () async {
                           orderProvider.customer =
                               customersProvider.customers[index];
-                          // Creo la orden
                           await orderProvider.createOrder();
-                          print(orderProvider.order.toJson());
-                          // Me muevo a la pantalla de productos
                           // ignore: use_build_context_synchronously
                           Navigator.pushNamed(context, PRODUCTS_ROUTE_NC);
                         }

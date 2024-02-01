@@ -1,5 +1,6 @@
 // TODO: Crear la pagina de la orden
 
+import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/design/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,21 +18,59 @@ class OrderPage extends StatelessWidget {
         title: const Text('Orden'),
         actions: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              orderProvider.deleteOrder();
+              orderProvider.resetBoxQuantity();
+              orderProvider.resetUnitsQuantity();
+              Navigator.pushReplacementNamed(context, CUSTOMERS_ROUTE_NC);
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
             icon: const Icon(
               Icons.delete,
             ),
           )
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          print(orderProvider.customer.toJson());
-        },
-        // child: const Icon(Icons.send),
-        label: const Text('Enviar'),
-        icon: const Icon(Icons.send),
-      ),
+      floatingActionButton: orderProvider.isLoading
+          ? FloatingActionButton.large(
+              onPressed: () {},
+              child: CircularProgressIndicator(
+                color: AppColors.success,
+              ),
+            )
+          : FloatingActionButton.extended(
+              onPressed: () async {
+                await orderProvider.sendOrder();
+                orderProvider.resetBoxQuantity();
+                orderProvider.resetUnitsQuantity();
+                // ignore: use_build_context_synchronously
+                Navigator.pushReplacementNamed(context, CUSTOMERS_ROUTE_NC);
+                // ignore: use_build_context_synchronously
+                Navigator.pop(context);
+                // ignore: use_build_context_synchronously
+                Navigator.pop(context);
+                // ignore: use_build_context_synchronously
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    backgroundColor: AppColors.success,
+                    content: Row(
+                      children: [
+                        const Text('Orden enviada'),
+                        const Spacer(),
+                        Icon(
+                          Icons.check,
+                          color: AppColors.white,
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+              // child: const Icon(Icons.send),
+              label: const Text('Enviar'),
+              icon: const Icon(Icons.send),
+            ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -125,7 +164,9 @@ class OrderPage extends StatelessWidget {
                     title:
                         Text('${orderProvider.ordersDetails[index].product}'),
                     trailing: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        orderProvider.removeOrderDetail(index: index);
+                      },
                       icon: Icon(
                         Icons.remove_circle,
                         color: AppColors.danger,
@@ -144,19 +185,19 @@ class OrderPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Subtotal: \$${orderProvider.order.subtotal!.toStringAsFixed(2)}',
+                    'Subtotal: \$${(orderProvider.order.subtotal ?? 0).toStringAsFixed(2)}',
                     style: const TextStyle(
                       fontSize: 16,
                     ),
                   ),
                   Text(
-                    'IVA: \$${orderProvider.order.iva!.toStringAsFixed(2)}',
+                    'IVA: \$${(orderProvider.order.iva ?? 0).toStringAsFixed(2)}',
                     style: const TextStyle(
                       fontSize: 16,
                     ),
                   ),
                   Text(
-                    'Total: \$${orderProvider.order.total!.toStringAsFixed(2)}',
+                    'Total: \$${(orderProvider.order.total ?? 0).toStringAsFixed(2)}',
                     style: const TextStyle(
                       fontSize: 16,
                     ),
