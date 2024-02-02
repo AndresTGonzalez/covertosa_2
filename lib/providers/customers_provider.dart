@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/local_services/database_helper.dart';
 import 'package:covertosa_2/models/customers.dart';
@@ -91,7 +93,6 @@ class CustomersProvider extends ChangeNotifier {
 
   Future addCustomer(Customers customer) async {
     await addCustomerLocal(customer);
-    await sendCustomer(customer);
   }
 
   Future addCustomerLocal(Customers customer) async {
@@ -106,6 +107,7 @@ class CustomersProvider extends ChangeNotifier {
     _customers.add(customer);
     isLoading = false;
     notifyListeners();
+    sendCustomer(customer);
     return res;
   }
 
@@ -165,23 +167,17 @@ class CustomersProvider extends ChangeNotifier {
   Future sendCustomer(Customers customer) async {
     isLoading = true;
     notifyListeners();
-    LocationData? locationData = await _getLocation();
-    customer.lat = locationData!.latitude.toString();
-    customer.lng = locationData.longitude.toString();
-    print(customer.toJson());
-    // final resp = await http.post(
-    //   Uri.parse(SET_CUSTOMERS),
-    //   body: customer.toJson(),
-    // );
-    // if (resp.statusCode == 200) {
-    //   print('se inserto');
-    //   isLoading = false;
-    //   notifyListeners();
-    //   return true;
-    // } else {
-    //   isLoading = false;
-    //   notifyListeners();
-    //   return false;
-    // }
+    // print(customer.toJson());
+    final resp = await http.post(
+      Uri.parse(SET_CUSTOMERS),
+      body: jsonEncode(customer.toJson()),
+    );
+    if (resp.statusCode == 200) {
+      print('se inserto');
+    } else {
+      print('no se inserto');
+      print(resp.body);
+      print(jsonEncode(customer.toJson()));
+    }
   }
 }
