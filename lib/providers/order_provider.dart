@@ -20,6 +20,7 @@ class OrderProvider extends ChangeNotifier {
   Products _product = Products();
   int _amountBox = 0;
   int _amountUnits = 0;
+  int _totalAmount = 0;
   bool _isLoading = false;
   // Getters
   Customers get customer => _customer;
@@ -29,6 +30,7 @@ class OrderProvider extends ChangeNotifier {
   Products get product => _product;
   int get amountBox => _amountBox;
   int get amountUnits => _amountUnits;
+  int get totalAmount => _totalAmount;
   bool get isLoading => _isLoading;
 
   // Setters
@@ -67,6 +69,11 @@ class OrderProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  set totalAmount(int value) {
+    _totalAmount = value;
+    notifyListeners();
+  }
+
   set isLoading(bool value) {
     _isLoading = value;
     notifyListeners();
@@ -75,36 +82,52 @@ class OrderProvider extends ChangeNotifier {
   // Metodos para manejar las cantidades de la orden
   void addBoxToOrder() {
     _amountBox = _amountBox + 1;
+    _totalAmount = _amountBox * _product.present!;
     notifyListeners();
   }
 
   void removeBoxToOrder() {
     if (_amountBox > 1) {
       _amountBox = _amountBox - 1;
-      // _amountUnits = _amountBox * _product.present!;
+      _totalAmount = _amountBox * _product.present!;
       notifyListeners();
     }
   }
 
   void resetBoxQuantity() {
     _amountBox = 0;
+    _totalAmount = _amountBox * _product.present!;
     notifyListeners();
   }
 
   void addUnitsToOrder() {
     _amountUnits = _amountUnits + 1;
+    _totalAmount = _totalAmount + 1;
     notifyListeners();
   }
 
   void removeUnitsToOrder() {
     if (_amountUnits > 1) {
       _amountUnits = _amountUnits - 1;
+      _totalAmount = _totalAmount - 1;
       notifyListeners();
     }
   }
 
   void resetUnitsQuantity() {
     _amountUnits = 0;
+    if (_amountBox == 0) {
+      _totalAmount = _amountUnits;
+    } else {
+      _totalAmount = _amountBox * _product.present!;
+    }
+    notifyListeners();
+  }
+
+  void resetValues() {
+    _amountBox = 0;
+    _amountUnits = 0;
+    _totalAmount = 0;
     notifyListeners();
   }
 
