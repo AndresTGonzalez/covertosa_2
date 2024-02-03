@@ -2,7 +2,7 @@ import 'package:covertosa_2/utils/queries_menu_items.dart';
 import 'package:flutter/material.dart';
 
 class QueriesPage extends StatelessWidget {
-  QueriesPage({super.key});
+  const QueriesPage({super.key});
 
   @override
   Widget build(BuildContext context) {

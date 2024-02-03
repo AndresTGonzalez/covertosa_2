@@ -116,9 +116,7 @@ class HomePage extends StatelessWidget {
 }
 
 class _RouteDialog extends StatelessWidget {
-  const _RouteDialog({
-    super.key,
-  });
+  const _RouteDialog();
 
   @override
   Widget build(BuildContext context) {
@@ -179,9 +177,7 @@ class _RouteDialog extends StatelessWidget {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({
-    super.key,
-  });
+  const _Header();
 
   @override
   Widget build(BuildContext context) {
@@ -210,7 +206,7 @@ class _Header extends StatelessWidget {
 }
 
 class _SyncCard extends StatelessWidget {
-  const _SyncCard({super.key});
+  const _SyncCard();
 
   @override
   Widget build(BuildContext context) {
@@ -327,7 +323,6 @@ class _RoutesList extends StatelessWidget {
   JobRoutesProvider jobRoutesProvider;
 
   _RoutesList({
-    super.key,
     required this.jobRoutesProvider,
   });
 

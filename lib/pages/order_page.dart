@@ -1,5 +1,3 @@
-// TODO: Crear la pagina de la orden
-
 import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/design/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -143,7 +141,7 @@ class OrderPage extends StatelessWidget {
                 ],
               ),
             ),
-            Container(
+            SizedBox(
               height: MediaQuery.of(context).size.height * 0.6,
               width: double.infinity,
               // color: Colors.blue,

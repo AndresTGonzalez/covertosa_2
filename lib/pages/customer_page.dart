@@ -21,7 +21,6 @@ class CustomerPage extends StatelessWidget {
 
 class _Content extends StatelessWidget {
   const _Content({
-    super.key,
     required this.customer,
   });
 

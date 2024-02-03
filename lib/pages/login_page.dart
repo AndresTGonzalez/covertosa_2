@@ -83,7 +83,6 @@ class LoginPage extends StatelessWidget {
 
 class _NetworkStatus extends StatelessWidget {
   const _NetworkStatus({
-    super.key,
     required this.width,
   });
 
@@ -123,7 +122,7 @@ class _NetworkStatus extends StatelessWidget {
 }
 
 class _LoginForm extends StatelessWidget {
-  const _LoginForm({super.key});
+  const _LoginForm();
 
   @override
   Widget build(BuildContext context) {

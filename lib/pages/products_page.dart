@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/design/app_colors.dart';
 import 'package:covertosa_2/models/products.dart';
@@ -31,28 +33,32 @@ class ProductsPage extends StatelessWidget {
       ],
       child: WillPopScope(
         onWillPop: () async {
-          if (!(await orderProvider.hasOrdersToSend())) {
+          if (isCrud) {
             return true;
           } else {
-            // ignore: use_build_context_synchronously
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: const Text('Órdenes pendientes'),
-                content: const Text(
-                    'Tienes órdenes pendientes. No puedes retroceder.'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Aceptar'),
-                  ),
-                ],
-              ),
-            );
-            // Impedir el regreso
-            return false;
+            if (!(orderProvider.hasProductsInOrder())) {
+              return true;
+            } else {
+              // ignore: use_build_context_synchronously
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Órdenes pendientes'),
+                  content: const Text(
+                      'Tienes órdenes pendientes. No puedes retroceder.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Aceptar'),
+                    ),
+                  ],
+                ),
+              );
+              // Impedir el regreso
+              return false;
+            }
           }
         },
         child: _Content(
@@ -68,7 +74,6 @@ class _Content extends StatelessWidget {
   bool isCrud;
 
   _Content({
-    super.key,
     required this.isCrud,
   });
 
@@ -152,7 +157,6 @@ class _Content extends StatelessWidget {
 
 class _ListTileProducto extends StatelessWidget {
   const _ListTileProducto({
-    super.key,
     required this.isCrud,
     required this.productProvider,
     required this.product,

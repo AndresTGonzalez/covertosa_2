@@ -343,4 +343,13 @@ class OrderProvider extends ChangeNotifier {
       return true;
     }
   }
+
+  // Método para que devuelve un bool si se tiene productos en la orden
+  bool hasProductsInOrder() {
+    if (_ordersDetails.isEmpty) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 }

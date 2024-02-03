@@ -37,7 +37,6 @@ class _Content extends StatelessWidget {
   bool isCrud;
 
   _Content({
-    super.key,
     required this.isCrud,
   });
 
