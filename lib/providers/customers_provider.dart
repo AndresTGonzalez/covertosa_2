@@ -93,10 +93,11 @@ class CustomersProvider extends ChangeNotifier {
 
   Future addCustomer(Customers customer) async {
     await addCustomerLocal(customer);
+    // await sendCustomer(customer);
   }
 
   Future addCustomerLocal(Customers customer) async {
-    isLoading = true;
+    _isLoading = true;
     notifyListeners();
     LocationData? locationData = await _getLocation();
     customer.lat = locationData!.latitude.toString();
@@ -105,20 +106,20 @@ class CustomersProvider extends ChangeNotifier {
     final db = await _databaseHelper.db;
     final res = await db.insert('customers', customer.toJson());
     _customers.add(customer);
-    isLoading = false;
+    _isLoading = false;
     notifyListeners();
     sendCustomer(customer);
     return res;
   }
 
   Future deleteCustomerLocal(int id) async {
-    isLoading = true;
+    _isLoading = true;
     notifyListeners();
     final db = await _databaseHelper.db;
     final res = await db.delete('customers', where: 'id = ?', whereArgs: [id]);
     _customers.removeWhere((customer) => customer.id == id);
     getCustomers();
-    isLoading = false;
+    _isLoading = false;
     notifyListeners();
     return res;
   }
@@ -163,21 +164,38 @@ class CustomersProvider extends ChangeNotifier {
     return locationData;
   }
 
-  // Funciones para manejar la logica en la base de datos remota
   Future sendCustomer(Customers customer) async {
-    isLoading = true;
+    _isLoading = true;
     notifyListeners();
-    // print(customer.toJson());
+    Map<String, dynamic> requestBody = {
+      "id": null,
+      "address": customer.address,
+      "cod": customer.cod,
+      "tradename": '${customer.name!} ${customer.lastname!}',
+      "document": customer.document,
+      "customer_type_id": 2,
+      "email": customer.email,
+      "lastname": customer.lastname,
+      "name": customer.name,
+      "phone": customer.phone,
+      "route": null,
+      "lat": customer.lat ?? 0,
+      "lng": customer.lng ?? 0
+    };
+    String requestBodyJson = jsonEncode(requestBody);
     final resp = await http.post(
       Uri.parse(SET_CUSTOMERS),
-      body: jsonEncode(customer.toJson()),
+      headers: {'Content-Type': 'application/json'},
+      body: requestBodyJson,
     );
     if (resp.statusCode == 200) {
-      print('se inserto');
-    } else {
-      print('no se inserto');
+      print('Cliente enviado');
       print(resp.body);
-      print(jsonEncode(customer.toJson()));
+    } else {
+      print('Error en el envio');
+      print(resp.body);
     }
+    _isLoading = false;
+    notifyListeners();
   }
 }

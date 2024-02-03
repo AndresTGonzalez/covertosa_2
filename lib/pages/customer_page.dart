@@ -35,6 +35,7 @@ class _Content extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: customer.id == null
             ? () async {
+                // await customerProvider.sendCustomer(customer);
                 await customerProvider.addCustomer(
                   customer,
                 );
