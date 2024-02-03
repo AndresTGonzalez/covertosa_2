@@ -82,12 +82,12 @@ class OrderProvider extends ChangeNotifier {
   // Metodos para manejar las cantidades de la orden
   void addBoxToOrder() {
     _amountBox = _amountBox + 1;
-    _totalAmount = _amountBox * _product.present!;
+    _totalAmount = (_amountBox * _product.present!) + _amountUnits;
     notifyListeners();
   }
 
   void removeBoxToOrder() {
-    if (_amountBox > 1) {
+    if (_amountBox > 0) {
       _amountBox = _amountBox - 1;
       _totalAmount = _amountBox * _product.present!;
       notifyListeners();
@@ -96,7 +96,7 @@ class OrderProvider extends ChangeNotifier {
 
   void resetBoxQuantity() {
     _amountBox = 0;
-    _totalAmount = _amountBox * _product.present!;
+    _totalAmount = (_amountBox * _product.present!) + _amountUnits;
     notifyListeners();
   }
 
@@ -107,7 +107,7 @@ class OrderProvider extends ChangeNotifier {
   }
 
   void removeUnitsToOrder() {
-    if (_amountUnits > 1) {
+    if (_amountUnits > 0) {
       _amountUnits = _amountUnits - 1;
       _totalAmount = _totalAmount - 1;
       notifyListeners();
