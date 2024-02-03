@@ -33,28 +33,32 @@ class ProductsPage extends StatelessWidget {
       ],
       child: WillPopScope(
         onWillPop: () async {
-          if (!(await orderProvider.hasOrdersToSend())) {
+          if (isCrud) {
             return true;
           } else {
-            // ignore: use_build_context_synchronously
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: const Text('Órdenes pendientes'),
-                content: const Text(
-                    'Tienes órdenes pendientes. No puedes retroceder.'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Aceptar'),
-                  ),
-                ],
-              ),
-            );
-            // Impedir el regreso
-            return false;
+            if (!(orderProvider.hasProductsInOrder())) {
+              return true;
+            } else {
+              // ignore: use_build_context_synchronously
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Órdenes pendientes'),
+                  content: const Text(
+                      'Tienes órdenes pendientes. No puedes retroceder.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Aceptar'),
+                    ),
+                  ],
+                ),
+              );
+              // Impedir el regreso
+              return false;
+            }
           }
         },
         child: _Content(
