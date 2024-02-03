@@ -31,7 +31,6 @@ class _Content extends StatelessWidget {
   bool isOrder;
 
   _Content({
-    super.key,
     required this.product,
     required this.isOrder,
   });
@@ -239,7 +238,6 @@ class _OrderFunctions extends StatelessWidget {
   late Products product;
 
   _OrderFunctions({
-    super.key,
     required this.product,
   });
 
@@ -254,8 +252,7 @@ class _OrderFunctions extends StatelessWidget {
 class _OrderInfo extends StatelessWidget {
   final Products product;
 
-  _OrderInfo({
-    super.key,
+  const _OrderInfo({
     required this.product,
   });
 

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 
 import 'package:covertosa_2/constants.dart';
@@ -79,7 +81,7 @@ class AuthProvider extends ChangeNotifier {
             name: user.name!,
             id: user.userid!,
           );
-          print('Usuario registrado');
+          debugPrint('Usuario registrado');
         } catch (e) {
           print(e);
         }

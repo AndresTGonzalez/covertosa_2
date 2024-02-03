@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/design/app_colors.dart';
 import 'package:covertosa_2/models/products.dart';
@@ -68,7 +70,6 @@ class _Content extends StatelessWidget {
   bool isCrud;
 
   _Content({
-    super.key,
     required this.isCrud,
   });
 
@@ -152,7 +153,6 @@ class _Content extends StatelessWidget {
 
 class _ListTileProducto extends StatelessWidget {
   const _ListTileProducto({
-    super.key,
     required this.isCrud,
     required this.productProvider,
     required this.product,

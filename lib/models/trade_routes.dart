@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
 
 List<TradeRoutes> tradeFromJson(String str) => List<TradeRoutes>.from(
@@ -26,11 +28,11 @@ class TradeRoutes {
       code: json['code']);
 
   Map<String, dynamic> toJson() => {
-        'id': this.id,
-        'route_id': this.route_id,
-        'user_id': this.user_id,
-        'seller': this.seller,
-        'code': this.code
+        'id': id,
+        'route_id': route_id,
+        'user_id': user_id,
+        'seller': seller,
+        'code': code
       };
 }
 
@@ -64,12 +66,13 @@ class TradeRoutesSelection extends TradeRoutes {
           code: json['code'],
           selected: false);
 
+  @override
   Map<String, dynamic> toJson() => {
-        'id': this.id,
-        'route_id': this.route_id,
-        'user_id': this.user_id,
-        'seller': this.seller,
-        'code': this.code,
-        'selected': this.selected
+        'id': id,
+        'route_id': route_id,
+        'user_id': user_id,
+        'seller': seller,
+        'code': code,
+        'selected': selected
       };
 }

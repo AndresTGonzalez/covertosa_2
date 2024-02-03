@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:covertosa_2/local_services/database_helper.dart';
 import 'package:covertosa_2/models/trade_routes.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +8,7 @@ class JobRoutesProvider extends ChangeNotifier {
   final DatabaseHelper _databaseHelper = DatabaseHelper();
 
   List<TradeRoutesSelection> _tradeRoutes = [];
-  List<TradeRoutesSelection> _selectedTradeRoutes = [];
+  final List<TradeRoutesSelection> _selectedTradeRoutes = [];
 
   bool _isLoading = false;
   final DateTime _date = DateTime.now();

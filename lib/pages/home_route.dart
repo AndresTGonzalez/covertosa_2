@@ -49,7 +49,7 @@ class _HomeRouteState extends State<HomeRoute> {
       body: <Widget>[
         const HomePage(),
         const Center(child: Text('Transacciones')),
-        QueriesPage(),
+        const QueriesPage(),
         const Center(child: Text('Ventas')),
       ][currentPageIndex],
     );
