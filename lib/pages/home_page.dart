@@ -121,7 +121,7 @@ class _RouteDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final jobRoutesProvider = Provider.of<JobRoutesProvider>(context);
-    // final orderProvider = Provider.of<OrderProvider>(context);
+    final customersProvider = Provider.of<CustomersProvider>(context);
 
     return AlertDialog(
       title: Column(
@@ -154,6 +154,7 @@ class _RouteDialog extends StatelessWidget {
         TextButton(
           onPressed: () {
             jobRoutesProvider.accept();
+            customersProvider.stayInOrder = true;
             Navigator.pushReplacementNamed(context, CUSTOMERS_ROUTE_NC);
           },
           child: Text(

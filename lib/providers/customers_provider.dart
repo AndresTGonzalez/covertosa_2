@@ -25,6 +25,7 @@ class CustomersProvider extends ChangeNotifier {
   String _email = '';
 
   bool _isLoading = false;
+  bool _stayInOrder = false;
 
   CustomersProvider() {
     getCustomers();
@@ -32,6 +33,7 @@ class CustomersProvider extends ChangeNotifier {
 
   List<Customers> get customers => _customers;
   bool get isLoading => _isLoading;
+  bool get stayInOrder => _stayInOrder;
 
   String get code => _code;
   String get document => _document;
@@ -78,6 +80,11 @@ class CustomersProvider extends ChangeNotifier {
 
   set isLoading(bool value) {
     _isLoading = value;
+    notifyListeners();
+  }
+
+  set stayInOrder(bool value) {
+    _stayInOrder = value;
     notifyListeners();
   }
 
@@ -167,8 +174,6 @@ class CustomersProvider extends ChangeNotifier {
   }
 
   Future sendCustomer(Customers customer) async {
-    _isLoading = true;
-    notifyListeners();
     Map<String, dynamic> requestBody = {
       "id": null,
       "address": customer.address,
@@ -197,7 +202,5 @@ class CustomersProvider extends ChangeNotifier {
       print('Error en el envio');
       print(resp.body);
     }
-    _isLoading = false;
-    notifyListeners();
   }
 }

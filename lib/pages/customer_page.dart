@@ -12,10 +12,7 @@ class CustomerPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final Customers customer =
         ModalRoute.of(context)!.settings.arguments as Customers;
-    return ChangeNotifierProvider(
-      child: _Content(customer: customer),
-      create: (_) => CustomersProvider(),
-    );
+    return _Content(customer: customer);
   }
 }
 
@@ -34,7 +31,6 @@ class _Content extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: customer.id == null
             ? () async {
-                // await customerProvider.sendCustomer(customer);
                 await customerProvider.addCustomer(
                   customer,
                 );
@@ -43,7 +39,14 @@ class _Content extends StatelessWidget {
                 // ignore: use_build_context_synchronously
                 Navigator.pop(context);
                 // ignore: use_build_context_synchronously
-                Navigator.pushReplacementNamed(context, CUSTOMERS_ROUTE);
+                // Navigator.pushReplacementNamed(context, CUSTOMERS_ROUTE);
+                if (customerProvider.stayInOrder) {
+                  // ignore: use_build_context_synchronously
+                  Navigator.pushReplacementNamed(context, CUSTOMERS_ROUTE_NC);
+                } else {
+                  // ignore: use_build_context_synchronously
+                  Navigator.pushReplacementNamed(context, CUSTOMERS_ROUTE);
+                }
                 // ignore: use_build_context_synchronously
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
