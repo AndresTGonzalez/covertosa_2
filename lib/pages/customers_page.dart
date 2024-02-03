@@ -22,9 +22,6 @@ class CustomersPage extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => CustomersProvider(),
-        ),
-        ChangeNotifierProvider(
           create: (_) => SyncProvider(),
         ),
       ],
@@ -47,18 +44,16 @@ class _Content extends StatelessWidget {
     final orderProvider = Provider.of<OrderProvider>(context);
 
     return Scaffold(
-      floatingActionButton: isCrud
-          ? FloatingActionButton(
-              onPressed: () {
-                Navigator.pushNamed(
-                  context,
-                  CUSTOMER_PAGE_ROUTE,
-                  arguments: Customers(),
-                );
-              },
-              child: const Icon(Icons.add),
-            )
-          : null,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(
+            context,
+            CUSTOMER_PAGE_ROUTE,
+            arguments: Customers(),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
       appBar: AppBar(
         title: const Text('Clientes'),
         actions: [
