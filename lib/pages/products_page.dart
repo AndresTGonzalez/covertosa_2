@@ -141,15 +141,46 @@ class _Content extends StatelessWidget {
                 color: AppColors.principal,
               ),
             )
-          : ListView.builder(
-              itemCount: productProvider.products.length,
-              itemBuilder: (context, index) {
-                return _ListTileProducto(
-                  isCrud: isCrud,
-                  productProvider: productProvider,
-                  product: productProvider.products[index],
-                );
-              },
+          : Column(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Row(
+                    children: [
+                      const Text(
+                        'Cliente: ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.7,
+                        child: Text(
+                          '${orderProvider.customer.name}',
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.85,
+                  width: double.infinity,
+                  child: ListView.builder(
+                    itemCount: productProvider.products.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return _ListTileProducto(
+                        isCrud: isCrud,
+                        productProvider: productProvider,
+                        product: productProvider.products[index],
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
     );
   }
