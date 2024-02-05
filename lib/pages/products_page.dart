@@ -109,7 +109,7 @@ class _Content extends StatelessWidget {
                     label: Text(
                       orderProvider.ordersDetails.length.toString(),
                     ),
-                    backgroundColor: AppColors.successDark,
+                    backgroundColor: AppColors.primary,
                     child: const Icon(Icons.shopping_cart),
                   ),
                 ),
@@ -138,7 +138,7 @@ class _Content extends StatelessWidget {
       body: productProvider.isLoading
           ? Center(
               child: CircularProgressIndicator(
-                color: AppColors.principal,
+                color: AppColors.primary,
               ),
             )
           : Column(
@@ -164,9 +164,30 @@ class _Content extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Divider(),
                 Container(
-                  height: MediaQuery.of(context).size.height * 0.85,
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Row(
+                    children: [
+                      const Text(
+                        'Identificación: ',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.6,
+                        child: Text(
+                          '${orderProvider.customer.document}',
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const Divider(),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.8,
                   width: double.infinity,
                   child: ListView.builder(
                     itemCount: productProvider.products.length,

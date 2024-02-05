@@ -50,6 +50,7 @@ class _Content extends StatelessWidget {
       child: Scaffold(
         floatingActionButton: isOrder
             ? FloatingActionButton(
+                backgroundColor: AppColors.primary,
                 onPressed: () async {
                   orderProvider.product = product;
                   await orderProvider.createOrderDetail(
@@ -58,7 +59,10 @@ class _Content extends StatelessWidget {
                   // ignore: use_build_context_synchronously
                   Navigator.pop(context);
                 },
-                child: const Icon(Icons.add),
+                child: Icon(
+                  Icons.add,
+                  color: AppColors.white,
+                ),
               )
             : null,
         appBar: AppBar(

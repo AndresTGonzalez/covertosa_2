@@ -21,7 +21,8 @@ class _HomeRouteState extends State<HomeRoute> {
             currentPageIndex = index;
           });
         },
-        indicatorColor: AppColors.tertiary,
+        // indicatorColor: AppColors.secondary,
+        surfaceTintColor: AppColors.white,
         selectedIndex: currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(

@@ -1,5 +1,6 @@
 import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/design/app_colors.dart';
+import 'package:covertosa_2/utils/snackbar_message.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -31,13 +32,15 @@ class OrderPage extends StatelessWidget {
         ],
       ),
       floatingActionButton: orderProvider.isLoading
-          ? FloatingActionButton.large(
+          ? FloatingActionButton(
+              backgroundColor: AppColors.primary,
               onPressed: () {},
               child: CircularProgressIndicator(
-                color: AppColors.success,
+                color: AppColors.white,
               ),
             )
           : FloatingActionButton.extended(
+              backgroundColor: AppColors.primary,
               onPressed: () async {
                 await orderProvider.sendOrder();
                 orderProvider.resetBoxQuantity();
@@ -49,25 +52,23 @@ class OrderPage extends StatelessWidget {
                 // ignore: use_build_context_synchronously
                 Navigator.pop(context);
                 // ignore: use_build_context_synchronously
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    backgroundColor: AppColors.success,
-                    content: Row(
-                      children: [
-                        const Text('Orden enviada'),
-                        const Spacer(),
-                        Icon(
-                          Icons.check,
-                          color: AppColors.white,
-                        ),
-                      ],
-                    ),
-                  ),
+                SnackbarMessage.show(
+                  context: context,
+                  message: 'Orden enviada',
+                  isError: false,
                 );
               },
               // child: const Icon(Icons.send),
-              label: const Text('Enviar'),
-              icon: const Icon(Icons.send),
+              label: Text(
+                'Enviar',
+                style: TextStyle(
+                  color: AppColors.white,
+                ),
+              ),
+              icon: Icon(
+                Icons.send,
+                color: AppColors.white,
+              ),
             ),
       body: SingleChildScrollView(
         child: Column(
@@ -153,8 +154,31 @@ class OrderPage extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                            'Cantidad: ${orderProvider.ordersDetails[index].amount}'),
+                        Row(
+                          children: [
+                            Text(
+                                'Cantidad: ${orderProvider.ordersDetails[index].amount}'),
+                            IconButton(
+                              onPressed: () {
+                                orderProvider.addAmountToDetail(index: index);
+                              },
+                              icon: Icon(
+                                Icons.add_circle,
+                                color: AppColors.success,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: () {
+                                orderProvider.removeAmountToDetail(
+                                    index: index);
+                              },
+                              icon: Icon(
+                                Icons.remove_circle,
+                                color: AppColors.danger,
+                              ),
+                            ),
+                          ],
+                        ),
                         Text(
                             'Subtotal: \$${orderProvider.ordersDetails[index].subtotal!.toStringAsFixed(2)}')
                       ],
@@ -166,7 +190,7 @@ class OrderPage extends StatelessWidget {
                         orderProvider.removeOrderDetail(index: index);
                       },
                       icon: Icon(
-                        Icons.remove_circle,
+                        Icons.delete,
                         color: AppColors.danger,
                       ),
                     ),

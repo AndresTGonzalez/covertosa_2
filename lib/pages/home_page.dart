@@ -55,7 +55,7 @@ class HomePage extends StatelessWidget {
                               Icon(
                                 Icons.start,
                                 size: 50,
-                                color: AppColors.tertiary,
+                                color: AppColors.secondary,
                               ),
                               const SizedBox(
                                 width: 20,
@@ -83,7 +83,7 @@ class HomePage extends StatelessWidget {
                             Icon(
                               Icons.local_shipping,
                               size: 50,
-                              color: AppColors.tertiary,
+                              color: AppColors.secondary,
                             ),
                             const SizedBox(
                               width: 20,
@@ -283,7 +283,7 @@ class _SyncCard extends StatelessWidget {
                   ),
                   const Spacer(),
                   CircularProgressIndicator(
-                    color: AppColors.tertiary,
+                    color: AppColors.primary,
                   ),
                 ],
               ),
@@ -299,7 +299,7 @@ class _SyncCard extends StatelessWidget {
                   Icon(
                     Icons.sync,
                     size: 50,
-                    color: AppColors.tertiary,
+                    color: AppColors.secondary,
                   ),
                   const SizedBox(
                     width: 20,
@@ -336,7 +336,7 @@ class _RoutesList extends StatelessWidget {
         return ListTile(
           title: Text(tradeRoute.code!),
           trailing: Checkbox(
-            activeColor: AppColors.tertiary,
+            activeColor: AppColors.secondary,
             value: tradeRoute.selected,
             onChanged: (bool? value) {
               if (value!) {

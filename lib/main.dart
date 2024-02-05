@@ -32,6 +32,7 @@ class _App extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
+        primarySwatch: Colors.blue,
       ),
       routes: routes,
       initialRoute: CHECK_AUTH_ROUTE,

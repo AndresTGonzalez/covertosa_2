@@ -2,6 +2,7 @@ import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/design/design.dart';
 import 'package:covertosa_2/models/customers.dart';
 import 'package:covertosa_2/providers/customers_provider.dart';
+import 'package:covertosa_2/utils/snackbar_message.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -39,7 +40,6 @@ class _Content extends StatelessWidget {
                 // ignore: use_build_context_synchronously
                 Navigator.pop(context);
                 // ignore: use_build_context_synchronously
-                // Navigator.pushReplacementNamed(context, CUSTOMERS_ROUTE);
                 if (customerProvider.stayInOrder) {
                   // ignore: use_build_context_synchronously
                   Navigator.pushReplacementNamed(context, CUSTOMERS_ROUTE_NC);
@@ -48,10 +48,10 @@ class _Content extends StatelessWidget {
                   Navigator.pushReplacementNamed(context, CUSTOMERS_ROUTE);
                 }
                 // ignore: use_build_context_synchronously
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Cliente creado con éxito'),
-                  ),
+                SnackbarMessage.show(
+                  context: context,
+                  message: 'Cliente creado con éxito',
+                  isError: false,
                 );
               }
             : () async {
@@ -65,16 +65,16 @@ class _Content extends StatelessWidget {
                 // ignore: use_build_context_synchronously
                 Navigator.pushReplacementNamed(context, CUSTOMERS_ROUTE);
                 // ignore: use_build_context_synchronously
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Cliente actualizado con éxito'),
-                  ),
+                SnackbarMessage.show(
+                  context: context,
+                  message: 'Cliente actualizado con éxito',
+                  isError: false,
                 );
               },
-        backgroundColor: AppColors.tertiary,
+        backgroundColor: AppColors.primary,
         child: customerProvider.isLoading
-            ? const CircularProgressIndicator(
-                color: Colors.white,
+            ? CircularProgressIndicator(
+                color: AppColors.white,
               )
             : const Icon(
                 Icons.save,

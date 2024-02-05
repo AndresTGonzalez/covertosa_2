@@ -185,7 +185,7 @@ class _LoginForm extends StatelessWidget {
               }
             },
             style: FilledButton.styleFrom(
-              backgroundColor: AppColors.secondary,
+              backgroundColor: AppColors.primary,
             ),
             child: Container(
               width: double.infinity,

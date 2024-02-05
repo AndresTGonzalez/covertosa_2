@@ -375,4 +375,73 @@ class OrderProvider extends ChangeNotifier {
       return true;
     }
   }
+
+  // Metodos para manipular la cantidad de los detalles en el carrito
+  void addAmountToDetail({required int index}) {
+    num subtotal = _ordersDetails[index].subtotal!;
+    num iva = _ordersDetails[index].iva!;
+    num total = _ordersDetails[index].total!;
+    bool taxeable = true;
+
+    if (_ordersDetails[index].iva! > 0) {
+      taxeable = true;
+    } else {
+      taxeable = false;
+    }
+    _ordersDetails[index].amount = _ordersDetails[index].amount! + 1;
+    _order.subtotal = _order.subtotal! - subtotal;
+    _order.iva = _order.iva! - iva;
+    _order.total = _order.total! - total;
+    _ordersDetails[index].subtotal =
+        _ordersDetails[index].amount! * _ordersDetails[index].price!;
+    if (taxeable) {
+      _ordersDetails[index].iva =
+          _ordersDetails[index].subtotal! * (IVA_VALUE / 100);
+    } else {
+      _ordersDetails[index].iva = 0;
+    }
+    _ordersDetails[index].total =
+        _ordersDetails[index].subtotal! + _ordersDetails[index].iva!;
+    _order.subtotal = _order.subtotal! + _ordersDetails[index].subtotal!;
+    _order.iva = _order.iva! + _ordersDetails[index].iva!;
+    _order.total = _order.total! + _ordersDetails[index].total!;
+    _order.total = _order.subtotal! + _order.iva!;
+
+    notifyListeners();
+  }
+
+  void removeAmountToDetail({required int index}) {
+    num subtotal = _ordersDetails[index].subtotal!;
+    num iva = _ordersDetails[index].iva!;
+    num total = _ordersDetails[index].total!;
+    bool taxeable = true;
+
+    if (_ordersDetails[index].amount! > 1) {
+      if (_ordersDetails[index].iva! > 0) {
+        taxeable = true;
+      } else {
+        taxeable = false;
+      }
+      _ordersDetails[index].amount = _ordersDetails[index].amount! - 1;
+      _order.subtotal = _order.subtotal! - subtotal;
+      _order.iva = _order.iva! - iva;
+      _order.total = _order.total! - total;
+      _ordersDetails[index].subtotal =
+          _ordersDetails[index].amount! * _ordersDetails[index].price!;
+      if (taxeable) {
+        _ordersDetails[index].iva =
+            _ordersDetails[index].subtotal! * (IVA_VALUE / 100);
+      } else {
+        _ordersDetails[index].iva = 0;
+      }
+      _ordersDetails[index].total =
+          _ordersDetails[index].subtotal! + _ordersDetails[index].iva!;
+      _order.subtotal = _order.subtotal! + _ordersDetails[index].subtotal!;
+      _order.iva = _order.iva! + _ordersDetails[index].iva!;
+      _order.total = _order.total! + _ordersDetails[index].total!;
+      _order.total = _order.subtotal! + _order.iva!;
+
+      notifyListeners();
+    }
+  }
 }

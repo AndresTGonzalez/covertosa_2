@@ -3,7 +3,6 @@
 import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/design/app_colors.dart';
 import 'package:covertosa_2/models/customers.dart';
-import 'package:covertosa_2/providers/customers_provider.dart';
 import 'package:covertosa_2/providers/providers.dart';
 import 'package:covertosa_2/search/search_delegate_customers.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +44,7 @@ class _Content extends StatelessWidget {
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.primary,
         onPressed: () {
           Navigator.pushNamed(
             context,
@@ -52,7 +52,10 @@ class _Content extends StatelessWidget {
             arguments: Customers(),
           );
         },
-        child: const Icon(Icons.add),
+        child: Icon(
+          Icons.add,
+          color: AppColors.white,
+        ),
       ),
       appBar: AppBar(
         title: const Text('Clientes'),
@@ -82,7 +85,7 @@ class _Content extends StatelessWidget {
       body: customersProvider.isLoading
           ? Center(
               child: CircularProgressIndicator(
-                color: AppColors.principal,
+                color: AppColors.primary,
               ),
             )
           : ListView.builder(
