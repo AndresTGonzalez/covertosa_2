@@ -143,51 +143,14 @@ class _Content extends StatelessWidget {
             )
           : Column(
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: Row(
-                    children: [
-                      const Text(
-                        'Cliente: ',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.7,
-                        child: Text(
-                          '${orderProvider.customer.name}',
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  child: Row(
-                    children: [
-                      const Text(
-                        'Identificación: ',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.6,
-                        child: Text(
-                          '${orderProvider.customer.document}',
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const Divider(),
+                // _CustomerInfo(orderProvider: orderProvider),
+                isCrud
+                    ? Container()
+                    : _CustomerInfo(orderProvider: orderProvider),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.8,
+                  height: isCrud
+                      ? MediaQuery.of(context).size.height * 0.888
+                      : MediaQuery.of(context).size.height * 0.81,
                   width: double.infinity,
                   child: ListView.builder(
                     itemCount: productProvider.products.length,
@@ -203,6 +166,66 @@ class _Content extends StatelessWidget {
                 ),
               ],
             ),
+    );
+  }
+}
+
+class _CustomerInfo extends StatelessWidget {
+  const _CustomerInfo({
+    super.key,
+    required this.orderProvider,
+  });
+
+  final OrderProvider orderProvider;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Row(
+            children: [
+              const Text(
+                'Cliente: ',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.7,
+                child: Text(
+                  '${orderProvider.customer.name}',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Row(
+            children: [
+              const Text(
+                'Identificación: ',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.6,
+                child: Text(
+                  '${orderProvider.customer.document}',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Divider(),
+      ],
     );
   }
 }

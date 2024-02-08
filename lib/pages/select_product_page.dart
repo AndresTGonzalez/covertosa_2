@@ -110,7 +110,7 @@ class _Content extends StatelessWidget {
                                   const Text(
                                     'Producto: ',
                                     style: TextStyle(
-                                      fontSize: 18,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -122,7 +122,7 @@ class _Content extends StatelessWidget {
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 15,
                                       ),
                                     ),
                                   ),
@@ -134,7 +134,7 @@ class _Content extends StatelessWidget {
                                   const Text(
                                     'Código: ',
                                     style: TextStyle(
-                                      fontSize: 18,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -146,7 +146,7 @@ class _Content extends StatelessWidget {
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 15,
                                       ),
                                     ),
                                   ),
@@ -158,7 +158,7 @@ class _Content extends StatelessWidget {
                                   const Text(
                                     'Precio unitario: ',
                                     style: TextStyle(
-                                      fontSize: 18,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -170,7 +170,7 @@ class _Content extends StatelessWidget {
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 15,
                                       ),
                                     ),
                                   ),
@@ -182,7 +182,7 @@ class _Content extends StatelessWidget {
                                   const Text(
                                     'Unidades por caja: ',
                                     style: TextStyle(
-                                      fontSize: 18,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -194,7 +194,7 @@ class _Content extends StatelessWidget {
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 15,
                                       ),
                                     ),
                                   ),
@@ -206,7 +206,7 @@ class _Content extends StatelessWidget {
                                   const Text(
                                     'Stock: ',
                                     style: TextStyle(
-                                      fontSize: 18,
+                                      fontSize: 15,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
@@ -218,7 +218,7 @@ class _Content extends StatelessWidget {
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: const TextStyle(
-                                        fontSize: 18,
+                                        fontSize: 15,
                                       ),
                                     ),
                                   ),
@@ -232,69 +232,70 @@ class _Content extends StatelessWidget {
                           _OrderFunctions(
                             product: product,
                           ),
-                        const Divider(),
-                        Container(
-                          width: double.infinity,
-                          height: MediaQuery.of(context).size.height * 0.15,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  const Text(
-                                    'Cantidad: ',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                        if (isOrder) const Divider(),
+                        if (isOrder)
+                          SizedBox(
+                            width: double.infinity,
+                            height: MediaQuery.of(context).size.height * 0.15,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Text(
+                                      'Cantidad: ',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                  Text(orderProvider.totalAmount
-                                      .toStringAsFixed(0)),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  const Text(
-                                    'Subtotal: ',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                                    Text(orderProvider.totalAmount
+                                        .toStringAsFixed(0)),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Text(
+                                      'Subtotal: ',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                      '\$${(orderProvider.totalAmount * product.price!).toStringAsFixed(2)}'),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  const Text(
-                                    'IVA: ',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                                    Text(
+                                        '\$${(orderProvider.totalAmount * product.price!).toStringAsFixed(2)}'),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Text(
+                                      'IVA: ',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                      '\$${((orderProvider.totalAmount * product.price!) * (IVA_VALUE / 100)).toStringAsFixed(2)}'),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  const Text(
-                                    'Total: ',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
+                                    Text(
+                                        '\$${((orderProvider.totalAmount * product.price!) * (IVA_VALUE / 100)).toStringAsFixed(2)}'),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Text(
+                                      'Total: ',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
-                                  ),
-                                  Text(
-                                      '\$${(((orderProvider.totalAmount * product.price!) * (IVA_VALUE / 100) + (orderProvider.totalAmount * product.price!))).toStringAsFixed(2)}'),
-                                ],
-                              ),
-                            ],
+                                    Text(
+                                        '\$${(((orderProvider.totalAmount * product.price!) * (IVA_VALUE / 100) + (orderProvider.totalAmount * product.price!))).toStringAsFixed(2)}'),
+                                  ],
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),
@@ -346,7 +347,7 @@ class _OrderInfo extends StatelessWidget {
                     Text(
                       'Unidades: ${orderProvider.amountUnits}',
                       style: const TextStyle(
-                        fontSize: 18,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -359,7 +360,7 @@ class _OrderInfo extends StatelessWidget {
                           icon: Icon(
                             Icons.remove_circle,
                             color: AppColors.danger,
-                            size: 30,
+                            size: 25,
                           ),
                         ),
                         IconButton(
@@ -369,7 +370,7 @@ class _OrderInfo extends StatelessWidget {
                           icon: Icon(
                             Icons.add_circle,
                             color: AppColors.success,
-                            size: 30,
+                            size: 25,
                           ),
                         ),
                         IconButton(
@@ -379,7 +380,7 @@ class _OrderInfo extends StatelessWidget {
                           icon: Icon(
                             Icons.restart_alt_sharp,
                             color: AppColors.danger,
-                            size: 30,
+                            size: 25,
                           ),
                         ),
                       ],
@@ -394,7 +395,7 @@ class _OrderInfo extends StatelessWidget {
                 // 'Cajas: {$orderProvider.ordersDetail.amount}',
                 'Cajas: ${orderProvider.amountBox}',
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -407,7 +408,7 @@ class _OrderInfo extends StatelessWidget {
                     icon: Icon(
                       Icons.remove_circle,
                       color: AppColors.danger,
-                      size: 30,
+                      size: 25,
                     ),
                   ),
                   IconButton(
@@ -417,7 +418,7 @@ class _OrderInfo extends StatelessWidget {
                     icon: Icon(
                       Icons.add_circle,
                       color: AppColors.success,
-                      size: 30,
+                      size: 25,
                     ),
                   ),
                   IconButton(
@@ -427,98 +428,13 @@ class _OrderInfo extends StatelessWidget {
                     icon: Icon(
                       Icons.restart_alt_sharp,
                       color: AppColors.danger,
-                      size: 30,
+                      size: 25,
                     ),
                   ),
                 ],
               ),
             ],
           ),
-          // orderProvider.product.present! > 1
-          //     ? Row(
-          //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //         children: [
-          //           Text(
-          //             'Presentación: ${orderProvider.product.present}',
-          //             style: const TextStyle(
-          //               fontSize: 18,
-          //               fontWeight: FontWeight.bold,
-          //             ),
-          //           ),
-          //           Row(
-          //             children: [
-          //               IconButton(
-          //                 onPressed: () {},
-          //                 icon: Icon(
-          //                   Icons.remove_circle,
-          //                   color: AppColors.danger,
-          //                   size: 30,
-          //                 ),
-          //               ),
-          //               IconButton(
-          //                 onPressed: () {},
-          //                 icon: Icon(
-          //                   Icons.add_circle,
-          //                   color: AppColors.success,
-          //                   size: 30,
-          //                 ),
-          //               ),
-          //               IconButton(
-          //                 onPressed: () {
-          //                   print(orderProvider.product.present!);
-          //                 },
-          //                 icon: Icon(
-          //                   Icons.restart_alt_sharp,
-          //                   color: AppColors.danger,
-          //                   size: 30,
-          //                 ),
-          //               ),
-          //             ],
-          //           ),
-          //         ],
-          //       )
-          //     : const SizedBox(),
-          // Aqui esta la funcion para las unidades aun no se como aplicarla
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //   children: [
-          //     const Text(
-          //       'Unidades: 1',
-          //       style: TextStyle(
-          //         fontSize: 18,
-          //         fontWeight: FontWeight.bold,
-          //       ),
-          //     ),
-          //     Row(
-          //       children: [
-          //         IconButton(
-          //           onPressed: () {},
-          //           icon: Icon(
-          //             Icons.remove_circle,
-          //             color: AppColors.danger,
-          //             size: 30,
-          //           ),
-          //         ),
-          //         IconButton(
-          //           onPressed: () {},
-          //           icon: Icon(
-          //             Icons.add_circle,
-          //             color: AppColors.success,
-          //             size: 30,
-          //           ),
-          //         ),
-          //         IconButton(
-          //           onPressed: () {},
-          //           icon: Icon(
-          //             Icons.restart_alt_sharp,
-          //             color: AppColors.danger,
-          //             size: 30,
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //   ],
-          // ),
         ],
       ),
     );

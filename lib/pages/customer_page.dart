@@ -3,6 +3,7 @@ import 'package:covertosa_2/design/design.dart';
 import 'package:covertosa_2/models/customers.dart';
 import 'package:covertosa_2/providers/customers_provider.dart';
 import 'package:covertosa_2/utils/snackbar_message.dart';
+import 'package:covertosa_2/validators/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -129,22 +130,22 @@ class _Content extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    TextFormField(
-                      initialValue: customer.cod,
-                      enabled: customer.id == null,
-                      onChanged: (value) => customer.cod = value,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Ingrese el código';
-                        }
-                        return null;
-                      },
-                      decoration: InputsDeocrations.textFormDecoration(
-                          labelText: 'Código', hintText: 'Ingrese el código'),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
+                    // TextFormField(
+                    //   initialValue: customer.cod,
+                    //   enabled: customer.id == null,
+                    //   onChanged: (value) => customer.cod = value,
+                    //   validator: (value) {
+                    //     if (value!.isEmpty) {
+                    //       return 'Ingrese el código';
+                    //     }
+                    //     return null;
+                    //   },
+                    //   decoration: InputsDeocrations.textFormDecoration(
+                    //       labelText: 'Código', hintText: 'Ingrese el código'),
+                    // ),
+                    // const SizedBox(
+                    //   height: 20,
+                    // ),
                     TextFormField(
                       initialValue: customer.document,
                       enabled: customer.id == null,
@@ -152,6 +153,10 @@ class _Content extends StatelessWidget {
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Ingrese la cedula';
+                        }
+                        if (!DocumentValidator.identificationCardValidator(
+                            value)) {
+                          return 'Cédula incorrecta';
                         }
                         return null;
                       },
@@ -184,6 +189,7 @@ class _Content extends StatelessWidget {
                     TextFormField(
                       initialValue: customer.phone,
                       onChanged: (value) => customer.phone = value,
+                      keyboardType: TextInputType.phone,
                       decoration: InputsDeocrations.textFormDecoration(
                           labelText: 'Teléfono',
                           hintText: 'Ingrese el teléfono'),
@@ -204,6 +210,16 @@ class _Content extends StatelessWidget {
                     TextFormField(
                       initialValue: customer.email,
                       onChanged: (value) => customer.email = value,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Ingrese el email';
+                        }
+                        if (!FormValidator.emailValidator(value)) {
+                          return 'Email incorrecto';
+                        }
+                        return null;
+                      },
                       decoration: InputsDeocrations.textFormDecoration(
                           labelText: 'Email', hintText: 'Ingrese el email'),
                     ),
