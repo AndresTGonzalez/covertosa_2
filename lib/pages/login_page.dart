@@ -176,7 +176,6 @@ class _LoginForm extends StatelessWidget {
           FilledButton(
             onPressed: () async {
               User? user = await authProvider.login(
-                isOnline: networkStatusProvider.isOnline,
                 context: context,
               );
               if (user != null) {

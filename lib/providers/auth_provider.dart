@@ -51,9 +51,9 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<User?> login({
-    required bool isOnline,
     required BuildContext context,
   }) async {
+    bool isOnline = await NetworkStatusServices().getNetworkStatus();
     isLoading = true;
     if (!isValidForm()) {
       isLoading = false;
@@ -98,6 +98,7 @@ class AuthProvider extends ChangeNotifier {
         return null;
       }
     } else {
+      print('Login offline');
       final user = await _authServices.loginOffline(
         user: _user,
         password: _password,

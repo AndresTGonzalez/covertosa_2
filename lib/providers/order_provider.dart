@@ -1,17 +1,13 @@
-import 'dart:convert';
-
 import 'package:covertosa_2/constants.dart';
-import 'package:covertosa_2/local_services/database_helper.dart';
 import 'package:covertosa_2/models/customers.dart';
 import 'package:covertosa_2/models/orders.dart';
 import 'package:covertosa_2/models/products.dart';
+import 'package:covertosa_2/services/services.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:location/location.dart';
 
 class OrderProvider extends ChangeNotifier {
-  final DatabaseHelper _databaseHelper = DatabaseHelper();
+  final NetworkStatusServices _networkStatusServices = NetworkStatusServices();
+  final OrderServices _orderServices = OrderServices();
 
   Customers _customer = Customers();
   Orders _order = Orders();
@@ -22,6 +18,7 @@ class OrderProvider extends ChangeNotifier {
   int _amountUnits = 0;
   int _totalAmount = 0;
   bool _isLoading = false;
+
   // Getters
   Customers get customer => _customer;
   Orders get order => _order;
@@ -39,43 +36,8 @@ class OrderProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  set order(Orders value) {
-    _order = value;
-    notifyListeners();
-  }
-
-  set ordersDetails(List<OrdersDetails> value) {
-    _ordersDetails = value;
-    notifyListeners();
-  }
-
-  set ordersDetail(OrdersDetails value) {
-    _ordersDetail = value;
-    notifyListeners();
-  }
-
   set product(Products value) {
     _product = value;
-    notifyListeners();
-  }
-
-  set amountBox(int value) {
-    _amountBox = value;
-    notifyListeners();
-  }
-
-  set amountUnits(int value) {
-    _amountUnits = value;
-    notifyListeners();
-  }
-
-  set totalAmount(int value) {
-    _totalAmount = value;
-    notifyListeners();
-  }
-
-  set isLoading(bool value) {
-    _isLoading = value;
     notifyListeners();
   }
 
@@ -178,7 +140,7 @@ class OrderProvider extends ChangeNotifier {
   // Metodos para manejar la orden
   Future createOrder() async {
     _createOrderInMemory();
-    await _createLocalOrder();
+    // await _createLocalOrder();
   }
 
   Future createOrderDetail({required int amountBox}) async {
@@ -188,22 +150,12 @@ class OrderProvider extends ChangeNotifier {
     _addOrderDetailMemory();
     resetBoxQuantity();
     resetUnitsQuantity();
-    await _createLocalOrderDetail();
+    // await _createLocalOrderDetail();
   }
 
   void _addOrderDetailMemory() async {
     _ordersDetail.tosend = 1;
     _ordersDetails.add(_ordersDetail);
-  }
-
-  Future _clearOrders() async {
-    var dbClient = await _databaseHelper.db;
-    await dbClient.delete('orders');
-  }
-
-  Future _clearOrdersDetails() async {
-    var dbClient = await _databaseHelper.db;
-    await dbClient.delete('order_details');
   }
 
   void _calculateOrderDetailTotals() {
@@ -233,141 +185,6 @@ class OrderProvider extends ChangeNotifier {
     _order.total = _order.total! + _ordersDetail.total!;
   }
 
-  /* 
-  Metodos para manejar la logica en la base de datos local
-  */
-  Future _createLocalOrder() async {
-    _clearOrders();
-    var dbClient = await _databaseHelper.db;
-    await dbClient.insert(
-      'orders',
-      _order.toJson(),
-    );
-    List<Map<String, dynamic>> order = await dbClient.rawQuery(
-      'SELECT id FROM orders WHERE code_customer = ?',
-      [_order.code_customer],
-    );
-    _order.id = order[0]['id'];
-  }
-
-  Future _createLocalOrderDetail() async {
-    _clearOrdersDetails();
-    var dbClient = await _databaseHelper.db;
-    dynamic resp = await dbClient.insert(
-      'order_details',
-      _ordersDetail.toJson(),
-    );
-    _ordersDetail.id = resp;
-  }
-
-  Future clearLocalOrders() async {
-    _clearOrders();
-    _clearOrdersDetails();
-  }
-
-  /* 
-  Metodos para manejar la logicas en la base de datos remota
-  */
-
-  // Primero obtener el location
-  Future<LocationData?> _getLocation() async {
-    Location location = Location();
-    bool serviceEnabled;
-    PermissionStatus permissionGranted;
-    LocationData locationData;
-    serviceEnabled = await location.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await location.requestService();
-      if (!serviceEnabled) {
-        return null;
-      }
-    }
-    permissionGranted = await location.hasPermission();
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await location.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) {
-        return null;
-      }
-    }
-    locationData = await location.getLocation();
-    return locationData;
-  }
-
-  Future sendOrder() async {
-    _isLoading = true;
-    notifyListeners();
-    LocationData? locationData = await _getLocation();
-    _order.lat = locationData!.latitude.toString();
-    _order.lng = locationData.longitude.toString();
-    Map<String, dynamic> toData = {
-      'code_customer': _order.code_customer,
-      'date_order': _order.date_order,
-      'process': _order.process,
-      'phone_customer': _order.phone_customer,
-      'route': _order.route,
-      'identificator': _order.identificator,
-      'subtotal': _order.subtotal,
-      'iva': _order.iva,
-      'total': _order.total,
-      'lat': _order.lat,
-      'lng': _order.lng,
-    };
-    List orderToSend = [];
-    orderToSend.add(Orders.fromJson(toData));
-    List details = [];
-    _ordersDetails.map((item) => details.add(item.toJson())).toList();
-    const storage = FlutterSecureStorage();
-    final int? id =
-        await storage.read(key: 'id').then((value) => int.parse(value!));
-    List<Orders> orders = [];
-    orders.add(_order);
-    List ordersDetails = [];
-    for (var element in _ordersDetails) {
-      ordersDetails.add(element.toJson());
-    }
-    final response = await http.post(
-      Uri.parse(POST_ORDERS),
-      body: json
-          .encode({"seller_id": id, "order": orderToSend, "details": details}),
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-    );
-
-    if (response.statusCode == 200) {
-      _ordersDetails = [];
-      // Actualizar el estado de la orden en la base de datos local
-      var dbClient = await _databaseHelper.db;
-      await dbClient.update(
-        'orders',
-        {'process': 1},
-        where: 'id = ?',
-        whereArgs: [_order.id],
-      );
-    } else {
-      // Mostrar un mensaje de error con un snackbar
-    }
-    _isLoading = false;
-    notifyListeners();
-  }
-
-  // Metodo booleano para verificar si hay ordenes con estado cero
-  Future<bool> hasOrdersToSend() async {
-    var dbClient = await _databaseHelper.db;
-    List<Map<String, dynamic>> orders = await dbClient.query(
-      'orders',
-      where: 'process = ?',
-      whereArgs: [0],
-    );
-    if (orders.isEmpty) {
-      return false;
-    } else {
-      return true;
-    }
-  }
-
-  // Método para que devuelve un bool si se tiene productos en la orden
   bool hasProductsInOrder() {
     if (_ordersDetails.isEmpty) {
       return false;
@@ -376,7 +193,6 @@ class OrderProvider extends ChangeNotifier {
     }
   }
 
-  // Metodos para manipular la cantidad de los detalles en el carrito
   void addAmountToDetail({required int index}) {
     num subtotal = _ordersDetails[index].subtotal!;
     num iva = _ordersDetails[index].iva!;
@@ -443,5 +259,24 @@ class OrderProvider extends ChangeNotifier {
 
       notifyListeners();
     }
+  }
+
+  Future sendOrder() async {
+    _isLoading = true;
+    notifyListeners();
+    bool hasInternet = await _networkStatusServices.getNetworkStatus();
+    if (hasInternet) {
+      await _orderServices.sendOrderToServer(
+        order: _order,
+        orderDetails: _ordersDetails,
+      );
+    } else {
+      await _orderServices.saveOrderLocally(_order);
+      await _orderServices.saveOrderDetailsLocally(_ordersDetails);
+      _order = Orders();
+      _ordersDetails = [];
+    }
+    _isLoading = false;
+    notifyListeners();
   }
 }

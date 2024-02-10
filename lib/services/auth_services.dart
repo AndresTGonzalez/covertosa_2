@@ -10,6 +10,7 @@ import '../models/user.dart';
 class AuthServices {
   final storage = const FlutterSecureStorage();
   final DatabaseHelper _databaseHelper = DatabaseHelper();
+
   // Ofline services
   Future<User?> loginOffline({
     required String user,
@@ -18,7 +19,6 @@ class AuthServices {
     var dbClient = await _databaseHelper.db;
     var res = await dbClient.rawQuery(
         "SELECT * FROM users WHERE email = '$user' and password = '$password'");
-
     if (res.isNotEmpty) {
       return User.fromJson(res.first);
     } else {
