@@ -2,6 +2,7 @@ import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/models/customers.dart';
 import 'package:covertosa_2/models/orders.dart';
 import 'package:covertosa_2/models/products.dart';
+import 'package:covertosa_2/models/trade_routes.dart';
 import 'package:covertosa_2/services/services.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +19,10 @@ class OrderProvider extends ChangeNotifier {
   int _amountUnits = 0;
   int _totalAmount = 0;
   bool _isLoading = false;
+  List<TradeRoutes> _tradeRoutes = [];
+  TradeRoutes _tradeRoute = TradeRoutes();
+  final DateTime _date = DateTime.now();
+  String _todayDate = '';
 
   // Getters
   Customers get customer => _customer;
@@ -29,6 +34,9 @@ class OrderProvider extends ChangeNotifier {
   int get amountUnits => _amountUnits;
   int get totalAmount => _totalAmount;
   bool get isLoading => _isLoading;
+  List<TradeRoutes> get tradeRoutes => _tradeRoutes;
+  TradeRoutes get tradeRoute => _tradeRoute;
+  String get todayDate => _todayDate;
 
   // Setters
   set customer(Customers value) {
@@ -39,6 +47,23 @@ class OrderProvider extends ChangeNotifier {
   set product(Products value) {
     _product = value;
     notifyListeners();
+  }
+
+  set tradeRoute(TradeRoutes value) {
+    _tradeRoute = value;
+    notifyListeners();
+  }
+
+  // Metodos para manejar la ruta
+  // Obtener las rutas de la base de datos interna
+  Future getTradeRoutes() async {
+    _tradeRoutes = await _orderServices.getTradeRoutesLocally();
+    _getTodayDate();
+    notifyListeners();
+  }
+
+  void _getTodayDate() {
+    _todayDate = '${_date.day}-${_date.month}-${_date.year}';
   }
 
   // Metodos para manejar las cantidades de la orden
@@ -140,7 +165,6 @@ class OrderProvider extends ChangeNotifier {
   // Metodos para manejar la orden
   Future createOrder() async {
     _createOrderInMemory();
-    // await _createLocalOrder();
   }
 
   Future createOrderDetail({required int amountBox}) async {
@@ -150,7 +174,6 @@ class OrderProvider extends ChangeNotifier {
     _addOrderDetailMemory();
     resetBoxQuantity();
     resetUnitsQuantity();
-    // await _createLocalOrderDetail();
   }
 
   void _addOrderDetailMemory() async {
@@ -264,6 +287,7 @@ class OrderProvider extends ChangeNotifier {
   Future sendOrder() async {
     _isLoading = true;
     notifyListeners();
+    _order.route = _tradeRoute.code;
     bool hasInternet = await _networkStatusServices.getNetworkStatus();
     if (hasInternet) {
       await _orderServices.sendOrderToServer(
@@ -275,6 +299,17 @@ class OrderProvider extends ChangeNotifier {
       await _orderServices.saveOrderDetailsLocally(_ordersDetails);
       _order = Orders();
       _ordersDetails = [];
+    }
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future sendLocalOrders() async {
+    _isLoading = true;
+    notifyListeners();
+    bool hasInternet = await _networkStatusServices.getNetworkStatus();
+    if (hasInternet) {
+      await _orderServices.sendLocalOrdersToServer();
     }
     _isLoading = false;
     notifyListeners();

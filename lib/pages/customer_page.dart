@@ -87,10 +87,10 @@ class _Content extends StatelessWidget {
             ? const Text('Nuevo cliente')
             : Text(customer.name!),
         actions: [
-          IconButton(
-            onPressed: customer.id == null
-                ? null
-                : () {
+          customer.id == null
+              ? Container()
+              : IconButton(
+                  onPressed: () {
                     customerProvider.deleteCustomerLocal(customer.id!);
                     Navigator.pop(context);
                     // ignore: use_build_context_synchronously
@@ -101,12 +101,12 @@ class _Content extends StatelessWidget {
                       ),
                     );
                   },
-            icon: const Icon(
-              Icons.delete,
-              // color: AppColors.danger,
-              size: 30,
-            ),
-          ),
+                  icon: const Icon(
+                    Icons.delete,
+                    // color: AppColors.danger,
+                    size: 30,
+                  ),
+                ),
         ],
       ),
       body: SingleChildScrollView(
@@ -130,22 +130,6 @@ class _Content extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Column(
                   children: [
-                    // TextFormField(
-                    //   initialValue: customer.cod,
-                    //   enabled: customer.id == null,
-                    //   onChanged: (value) => customer.cod = value,
-                    //   validator: (value) {
-                    //     if (value!.isEmpty) {
-                    //       return 'Ingrese el código';
-                    //     }
-                    //     return null;
-                    //   },
-                    //   decoration: InputsDeocrations.textFormDecoration(
-                    //       labelText: 'Código', hintText: 'Ingrese el código'),
-                    // ),
-                    // const SizedBox(
-                    //   height: 20,
-                    // ),
                     TextFormField(
                       initialValue: customer.document,
                       enabled: customer.id == null,

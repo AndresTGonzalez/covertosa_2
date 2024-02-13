@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/local_services/database_helper.dart';
 import 'package:covertosa_2/models/orders.dart';
+import 'package:covertosa_2/models/trade_routes.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:location/location.dart';
@@ -83,8 +84,59 @@ class OrderServices {
           'Accept': 'application/json'
         },
       );
+      print(response.body);
     } catch (e) {
       print(e);
+    }
+  }
+
+  Future<List<TradeRoutes>> getTradeRoutesLocally() async {
+    try {
+      var dbClient = await _databaseHelper.db;
+      final res = await dbClient.rawQuery("SELECT * FROM trade_routes");
+      List<TradeRoutes> list = res.isNotEmpty
+          ? res.map((c) => TradeRoutes.fromJson(c)).toList()
+          : [];
+      return list;
+    } catch (e) {
+      print(e);
+      return [];
+    }
+  }
+
+  // Enviar todas las ordenes locales al servidor
+  Future<bool> sendLocalOrdersToServer() async {
+    try {
+      var dbClient = await _databaseHelper.db;
+      final res = await dbClient.rawQuery("SELECT * FROM orders");
+      List<Orders> list =
+          res.isNotEmpty ? res.map((c) => Orders.fromJson(c)).toList() : [];
+      for (var order in list) {
+        final res = await dbClient.rawQuery(
+            "SELECT * FROM order_details WHERE id_order = ${order.id}");
+        List<OrdersDetails> list = res.isNotEmpty
+            ? res.map((c) => OrdersDetails.fromJson(c)).toList()
+            : [];
+        await sendOrderToServer(order: order, orderDetails: list);
+      }
+      _cleanLocalOrders();
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
+
+  // Limpiar las ordenes locales
+  Future<bool> _cleanLocalOrders() async {
+    try {
+      var dbClient = await _databaseHelper.db;
+      await dbClient.rawDelete("DELETE FROM orders");
+      await dbClient.rawDelete("DELETE FROM order_details");
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
     }
   }
 
