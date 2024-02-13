@@ -321,16 +321,6 @@ class OrderProvider extends ChangeNotifier {
   Future launchGoogleMaps() async {
     Uri url = Uri.parse(
         'geo:${_customer.lat},${_customer.lng}?q=${_customer.lat},${_customer.lng}');
-    // ignore: deprecated_member_use
-    if (await canLaunch(url.toString())) {
-      // ignore: deprecated_member_use
-      await launch(url.toString());
-    } else {
-      await LaunchApp.openApp(
-        androidPackageName: 'com.google.android.gms.maps',
-        iosUrlScheme: 'maps://',
-        openStore: true,
-      );
-    }
+    launchUrl(url);
   }
 }
