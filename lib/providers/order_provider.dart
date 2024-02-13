@@ -299,9 +299,9 @@ class OrderProvider extends ChangeNotifier {
     } else {
       await _orderServices.saveOrderLocally(_order);
       await _orderServices.saveOrderDetailsLocally(_ordersDetails);
-      _order = Orders();
-      _ordersDetails = [];
     }
+    _order = Orders();
+    _ordersDetails = [];
     _isLoading = false;
     notifyListeners();
   }
