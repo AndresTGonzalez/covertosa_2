@@ -4,7 +4,9 @@ import 'package:covertosa_2/models/orders.dart';
 import 'package:covertosa_2/models/products.dart';
 import 'package:covertosa_2/models/trade_routes.dart';
 import 'package:covertosa_2/services/services.dart';
+import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class OrderProvider extends ChangeNotifier {
   final NetworkStatusServices _networkStatusServices = NetworkStatusServices();
@@ -313,5 +315,22 @@ class OrderProvider extends ChangeNotifier {
     }
     _isLoading = false;
     notifyListeners();
+  }
+
+  // Metodo para lanzar Google Maps con la ubicaion del cliente
+  Future launchGoogleMaps() async {
+    Uri url = Uri.parse(
+        'geo:${_customer.lat},${_customer.lng}?q=${_customer.lat},${_customer.lng}');
+    // ignore: deprecated_member_use
+    if (await canLaunch(url.toString())) {
+      // ignore: deprecated_member_use
+      await launch(url.toString());
+    } else {
+      await LaunchApp.openApp(
+        androidPackageName: 'com.google.android.gms.maps',
+        iosUrlScheme: 'maps://',
+        openStore: true,
+      );
+    }
   }
 }

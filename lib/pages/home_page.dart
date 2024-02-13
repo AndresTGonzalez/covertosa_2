@@ -3,6 +3,7 @@ import 'package:covertosa_2/design/cards_decoration.dart';
 import 'package:covertosa_2/design/design.dart';
 import 'package:covertosa_2/models/trade_routes.dart';
 import 'package:covertosa_2/providers/providers.dart';
+import 'package:covertosa_2/utils/snackbar_message.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -76,6 +77,12 @@ class HomePage extends StatelessWidget {
                       GestureDetector(
                         onTap: () async {
                           await ordersProvider.sendLocalOrders();
+                          // ignore: use_build_context_synchronously
+                          SnackbarMessage.show(
+                            context: context,
+                            message: 'Ordenes enviadas',
+                            isError: false,
+                          );
                         },
                         child: Container(
                           width: double.infinity,
@@ -85,11 +92,15 @@ class HomePage extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Icon(
-                                Icons.local_shipping,
-                                size: 50,
-                                color: AppColors.secondary,
-                              ),
+                              ordersProvider.isLoading
+                                  ? CircularProgressIndicator(
+                                      color: AppColors.primary,
+                                    )
+                                  : Icon(
+                                      Icons.local_shipping,
+                                      size: 50,
+                                      color: AppColors.secondary,
+                                    ),
                               const SizedBox(
                                 width: 20,
                               ),
