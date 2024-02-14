@@ -17,14 +17,6 @@ class OrderPage extends StatelessWidget {
         title: const Text('Orden'),
         actions: [
           IconButton(
-            onPressed: () async {
-              await orderProvider.launchGoogleMaps();
-            },
-            icon: const Icon(
-              Icons.location_on,
-            ),
-          ),
-          IconButton(
             onPressed: () {
               orderProvider.deleteOrder();
               orderProvider.resetBoxQuantity();

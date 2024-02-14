@@ -150,7 +150,7 @@ class _Content extends StatelessWidget {
                 SizedBox(
                   height: isCrud
                       ? MediaQuery.of(context).size.height * 0.888
-                      : MediaQuery.of(context).size.height * 0.81,
+                      : MediaQuery.of(context).size.height * 0.765,
                   width: double.infinity,
                   child: ListView.builder(
                     itemCount: productProvider.products.length,
@@ -219,6 +219,35 @@ class _CustomerInfo extends StatelessWidget {
                   '${orderProvider.customer.document}',
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Row(
+            children: [
+              const Text(
+                'Dirección: ',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.6,
+                child: Text(
+                  '${orderProvider.customer.address}',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+              IconButton(
+                onPressed: () async {
+                  await orderProvider.launchGoogleMaps();
+                },
+                icon: const Icon(
+                  Icons.location_on,
                 ),
               ),
             ],
