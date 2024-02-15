@@ -4,9 +4,9 @@ import 'package:covertosa_2/models/orders.dart';
 import 'package:covertosa_2/models/products.dart';
 import 'package:covertosa_2/models/trade_routes.dart';
 import 'package:covertosa_2/services/services.dart';
-import 'package:external_app_launcher/external_app_launcher.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:uuid/uuid.dart';
 
 class OrderProvider extends ChangeNotifier {
   final NetworkStatusServices _networkStatusServices = NetworkStatusServices();
@@ -127,10 +127,12 @@ class OrderProvider extends ChangeNotifier {
     _order.process = 0;
     _order.phone_customer = _customer.phone;
     _order.route = _customer.route.toString();
-    _order.identificator = _customer.document;
     _order.subtotal = 0;
     _order.iva = 0;
     _order.total = 0;
+    var uuid = const Uuid();
+    String newOrderId = uuid.v4();
+    _order.identificator = newOrderId;
   }
 
   void inicializateOrderDetail({required int amount}) {
@@ -290,6 +292,7 @@ class OrderProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     _order.route = _tradeRoute.code;
+
     bool hasInternet = await _networkStatusServices.getNetworkStatus();
     if (hasInternet) {
       await _orderServices.sendOrderToServer(
