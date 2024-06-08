@@ -21,7 +21,8 @@ class _HomeRouteState extends State<HomeRoute> {
             currentPageIndex = index;
           });
         },
-        indicatorColor: AppColors.tertiary,
+        // indicatorColor: AppColors.secondary,
+        surfaceTintColor: AppColors.white,
         selectedIndex: currentPageIndex,
         destinations: const <Widget>[
           NavigationDestination(
@@ -49,7 +50,7 @@ class _HomeRouteState extends State<HomeRoute> {
       body: <Widget>[
         const HomePage(),
         const Center(child: Text('Transacciones')),
-        QueriesPage(),
+        const QueriesPage(),
         const Center(child: Text('Ventas')),
       ][currentPageIndex],
     );

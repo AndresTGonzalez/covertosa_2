@@ -1,7 +1,9 @@
 import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/design/cards_decoration.dart';
 import 'package:covertosa_2/design/design.dart';
+import 'package:covertosa_2/models/trade_routes.dart';
 import 'package:covertosa_2/providers/providers.dart';
+import 'package:covertosa_2/utils/snackbar_message.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -10,6 +12,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ordersProvider = Provider.of<OrderProvider>(context);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -35,13 +38,12 @@ class HomePage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       GestureDetector(
-                        onTap: () {
+                        onTap: () async {
+                          await ordersProvider.getTradeRoutes();
+                          // ignore: use_build_context_synchronously
                           showDialog(
                             context: context,
-                            builder: (_) => ChangeNotifierProvider(
-                              child: const _RouteDialog(),
-                              create: (_) => JobRoutesProvider(),
-                            ),
+                            builder: (_) => const _RouteDialog(),
                           );
                         },
                         child: Container(
@@ -55,7 +57,7 @@ class HomePage extends StatelessWidget {
                               Icon(
                                 Icons.start,
                                 size: 50,
-                                color: AppColors.tertiary,
+                                color: AppColors.secondary,
                               ),
                               const SizedBox(
                                 width: 20,
@@ -72,31 +74,46 @@ class HomePage extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Container(
-                        width: double.infinity,
-                        height: MediaQuery.of(context).size.height * 0.2,
-                        decoration: CardsDecoration.homeCardDecoration(),
-                        padding: const EdgeInsets.symmetric(horizontal: 25),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Icon(
-                              Icons.local_shipping,
-                              size: 50,
-                              color: AppColors.tertiary,
-                            ),
-                            const SizedBox(
-                              width: 20,
-                            ),
-                            const Text(
-                              'Fin del día',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.w300,
+                      GestureDetector(
+                        onTap: () async {
+                          await ordersProvider.sendLocalOrders();
+                          // ignore: use_build_context_synchronously
+                          SnackbarMessage.show(
+                            context: context,
+                            message: 'Ordenes enviadas',
+                            isError: false,
+                          );
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          height: MediaQuery.of(context).size.height * 0.2,
+                          decoration: CardsDecoration.homeCardDecoration(),
+                          padding: const EdgeInsets.symmetric(horizontal: 25),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              ordersProvider.isLoading
+                                  ? CircularProgressIndicator(
+                                      color: AppColors.primary,
+                                    )
+                                  : Icon(
+                                      Icons.local_shipping,
+                                      size: 50,
+                                      color: AppColors.secondary,
+                                    ),
+                              const SizedBox(
+                                width: 20,
                               ),
-                            ),
-                          ],
+                              const Text(
+                                'Fin del día',
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w300,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       ChangeNotifierProvider(
@@ -116,14 +133,12 @@ class HomePage extends StatelessWidget {
 }
 
 class _RouteDialog extends StatelessWidget {
-  const _RouteDialog({
-    super.key,
-  });
+  const _RouteDialog();
 
   @override
   Widget build(BuildContext context) {
-    final jobRoutesProvider = Provider.of<JobRoutesProvider>(context);
-    // final orderProvider = Provider.of<OrderProvider>(context);
+    final customersProvider = Provider.of<CustomersProvider>(context);
+    final ordersProvider = Provider.of<OrderProvider>(context);
 
     return AlertDialog(
       title: Column(
@@ -133,7 +148,7 @@ class _RouteDialog extends StatelessWidget {
           const Text("Seleccionar las rutas"),
           // Fecha de ahora
           Text(
-            'Fecha: ${jobRoutesProvider.todayDate}',
+            'Fecha: ${ordersProvider.todayDate}',
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w300,
@@ -155,13 +170,14 @@ class _RouteDialog extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-            jobRoutesProvider.accept();
+            // jobRoutesProvider.accept();
+            customersProvider.stayInOrder = true;
             Navigator.pushReplacementNamed(context, CUSTOMERS_ROUTE_NC);
           },
           child: Text(
             'Aceptar',
             style: TextStyle(
-              color: AppColors.success,
+              color: AppColors.secondary,
             ),
           ),
         ),
@@ -170,18 +186,14 @@ class _RouteDialog extends StatelessWidget {
         alignment: Alignment.center,
         width: 400,
         height: 125,
-        child: _RoutesList(
-          jobRoutesProvider: jobRoutesProvider,
-        ),
+        child: const _RoutesList(),
       ),
     );
   }
 }
 
 class _Header extends StatelessWidget {
-  const _Header({
-    super.key,
-  });
+  const _Header();
 
   @override
   Widget build(BuildContext context) {
@@ -210,7 +222,7 @@ class _Header extends StatelessWidget {
 }
 
 class _SyncCard extends StatelessWidget {
-  const _SyncCard({super.key});
+  const _SyncCard();
 
   @override
   Widget build(BuildContext context) {
@@ -286,7 +298,7 @@ class _SyncCard extends StatelessWidget {
                   ),
                   const Spacer(),
                   CircularProgressIndicator(
-                    color: AppColors.tertiary,
+                    color: AppColors.primary,
                   ),
                 ],
               ),
@@ -302,7 +314,7 @@ class _SyncCard extends StatelessWidget {
                   Icon(
                     Icons.sync,
                     size: 50,
-                    color: AppColors.tertiary,
+                    color: AppColors.secondary,
                   ),
                   const SizedBox(
                     width: 20,
@@ -324,32 +336,23 @@ class _SyncCard extends StatelessWidget {
 
 // ignore: must_be_immutable
 class _RoutesList extends StatelessWidget {
-  JobRoutesProvider jobRoutesProvider;
-
-  _RoutesList({
-    super.key,
-    required this.jobRoutesProvider,
-  });
+  const _RoutesList();
 
   @override
   Widget build(BuildContext context) {
+    final ordersProvider = Provider.of<OrderProvider>(context);
     return ListView.builder(
-      itemCount: jobRoutesProvider.tradeRoutes.length,
+      itemCount: ordersProvider.tradeRoutes.length,
       itemBuilder: (_, i) {
-        final tradeRoute = jobRoutesProvider.tradeRoutes[i];
-        return ListTile(
+        final tradeRoute = ordersProvider.tradeRoutes[i];
+        return RadioListTile(
+          value: tradeRoute,
           title: Text(tradeRoute.code!),
-          trailing: Checkbox(
-            activeColor: AppColors.tertiary,
-            value: tradeRoute.selected,
-            onChanged: (bool? value) {
-              if (value!) {
-                jobRoutesProvider.addTradeRoute(tradeRoute);
-              } else {
-                jobRoutesProvider.removeTradeRoute(tradeRoute.id!);
-              }
-            },
-          ),
+          activeColor: AppColors.primary,
+          groupValue: ordersProvider.tradeRoute,
+          onChanged: (value) {
+            ordersProvider.tradeRoute = value as TradeRoutes;
+          },
         );
       },
     );

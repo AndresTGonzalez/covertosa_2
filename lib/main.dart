@@ -15,6 +15,8 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => OrderProvider()),
         ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (context) => CustomersProvider()),
+        ChangeNotifierProvider(create: (context) => NetworkStatusProvider()),
       ],
       child: const _App(),
     );
@@ -22,9 +24,7 @@ class MyApp extends StatelessWidget {
 }
 
 class _App extends StatelessWidget {
-  const _App({
-    super.key,
-  });
+  const _App();
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +33,7 @@ class _App extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
+        primarySwatch: Colors.blue,
       ),
       routes: routes,
       initialRoute: CHECK_AUTH_ROUTE,

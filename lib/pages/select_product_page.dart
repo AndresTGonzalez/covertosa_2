@@ -1,4 +1,7 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:barcode_widget/barcode_widget.dart';
+import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/design/app_colors.dart';
 import 'package:covertosa_2/models/products.dart';
 import 'package:flutter/material.dart';
@@ -31,7 +34,6 @@ class _Content extends StatelessWidget {
   bool isOrder;
 
   _Content({
-    super.key,
     required this.product,
     required this.isOrder,
   });
@@ -40,193 +42,266 @@ class _Content extends StatelessWidget {
   Widget build(BuildContext context) {
     final orderProvider = Provider.of<OrderProvider>(context);
 
-    return Scaffold(
-      floatingActionButton: isOrder
-          ? FloatingActionButton(
-              onPressed: () async {
-                orderProvider.product = product;
-                await orderProvider.createOrderDetail(
-                  amountBox: orderProvider.amountBox,
-                );
-                // ignore: use_build_context_synchronously
-                Navigator.pop(context);
-              },
-              child: const Icon(Icons.add),
-            )
-          : null,
-      appBar: AppBar(
-        title: Text(product.shortname!),
-      ),
-      body: SizedBox(
-        width: double.infinity,
-        height: double.infinity,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                width: double.infinity,
-                height: MediaQuery.of(context).size.height * 0.3,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 40,
+    return WillPopScope(
+      onWillPop: () async {
+        orderProvider.resetValues();
+        return true;
+      },
+      child: Scaffold(
+        floatingActionButton: isOrder
+            ? FloatingActionButton(
+                backgroundColor: AppColors.primary,
+                onPressed: () async {
+                  orderProvider.product = product;
+                  await orderProvider.createOrderDetail(
+                    amountBox: orderProvider.amountBox,
+                  );
+                  // ignore: use_build_context_synchronously
+                  Navigator.pop(context);
+                },
+                child: Icon(
+                  Icons.add,
+                  color: AppColors.white,
                 ),
-                child: BarcodeWidget(
-                  barcode: Barcode.code39(),
-                  data: product.code!,
-                  width: 400,
-                  height: 160,
-                ),
-              ),
-              Container(
-                width: double.infinity,
-                height: MediaQuery.of(context).size.height * 0.5,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 30,
-                ),
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      SingleChildScrollView(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Text(
-                                  'Producto: ',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.6,
-                                  child: Text(
-                                    product.shortname!,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                const Text(
-                                  'Código: ',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.6,
-                                  child: Text(
-                                    product.code!,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                const Text(
-                                  'Precio unitario: ',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.5,
-                                  child: Text(
-                                    '\$ ${product.price!.toStringAsFixed(2)}',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                const Text(
-                                  'Unidades por caja: ',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.3,
-                                  child: Text(
-                                    '${product.present!}',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Row(
-                              children: [
-                                const Text(
-                                  'Stock: ',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.75,
-                                  child: Text(
-                                    'Cajas: ${(product.stock! / product.present!).toStringAsFixed(2)} | Unidades: ${product.stock! % product.present!}',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      if (isOrder)
-                        _OrderFunctions(
-                          product: product,
-                        ),
-                      // _OrderFunctions()
-                    ],
+              )
+            : null,
+        appBar: AppBar(
+          title: Text(product.shortname!),
+        ),
+        body: SizedBox(
+          width: double.infinity,
+          height: double.infinity,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 40,
+                  ),
+                  child: BarcodeWidget(
+                    barcode: Barcode.code39(),
+                    data: product.code!,
+                    width: 400,
+                    height: 160,
                   ),
                 ),
-              ),
-            ],
+                Container(
+                  width: double.infinity,
+                  height: MediaQuery.of(context).size.height * 0.6,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 30,
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        SingleChildScrollView(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Text(
+                                    'Producto: ',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.6,
+                                    child: Text(
+                                      product.shortname!,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  const Text(
+                                    'Código: ',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.6,
+                                    child: Text(
+                                      product.code!,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  const Text(
+                                    'Precio unitario: ',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.5,
+                                    child: Text(
+                                      '\$ ${product.price!.toStringAsFixed(2)}',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  const Text(
+                                    'Unidades por caja: ',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.3,
+                                    child: Text(
+                                      '${product.present!}',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              Row(
+                                children: [
+                                  const Text(
+                                    'Stock: ',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: MediaQuery.of(context).size.width *
+                                        0.75,
+                                    child: Text(
+                                      'Cajas: ${(product.stock! / product.present!).toStringAsFixed(2)} | Unidades: ${product.stock! % product.present!}',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        if (isOrder)
+                          _OrderFunctions(
+                            product: product,
+                          ),
+                        if (isOrder) const Divider(),
+                        if (isOrder)
+                          SizedBox(
+                            width: double.infinity,
+                            height: MediaQuery.of(context).size.height * 0.15,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    const Text(
+                                      'Cantidad: ',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(orderProvider.totalAmount
+                                        .toStringAsFixed(0)),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Text(
+                                      'Subtotal: ',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                        '\$${(orderProvider.totalAmount * product.price!).toStringAsFixed(2)}'),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Text(
+                                      'IVA: ',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                        '\$${((orderProvider.totalAmount * product.price!) * (IVA_VALUE / 100)).toStringAsFixed(2)}'),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    const Text(
+                                      'Total: ',
+                                      style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    Text(
+                                        '\$${(((orderProvider.totalAmount * product.price!) * (IVA_VALUE / 100) + (orderProvider.totalAmount * product.price!))).toStringAsFixed(2)}'),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -239,7 +314,6 @@ class _OrderFunctions extends StatelessWidget {
   late Products product;
 
   _OrderFunctions({
-    super.key,
     required this.product,
   });
 
@@ -254,8 +328,7 @@ class _OrderFunctions extends StatelessWidget {
 class _OrderInfo extends StatelessWidget {
   final Products product;
 
-  _OrderInfo({
-    super.key,
+  const _OrderInfo({
     required this.product,
   });
 
@@ -274,7 +347,7 @@ class _OrderInfo extends StatelessWidget {
                     Text(
                       'Unidades: ${orderProvider.amountUnits}',
                       style: const TextStyle(
-                        fontSize: 18,
+                        fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -287,7 +360,7 @@ class _OrderInfo extends StatelessWidget {
                           icon: Icon(
                             Icons.remove_circle,
                             color: AppColors.danger,
-                            size: 30,
+                            size: 25,
                           ),
                         ),
                         IconButton(
@@ -297,7 +370,7 @@ class _OrderInfo extends StatelessWidget {
                           icon: Icon(
                             Icons.add_circle,
                             color: AppColors.success,
-                            size: 30,
+                            size: 25,
                           ),
                         ),
                         IconButton(
@@ -307,7 +380,7 @@ class _OrderInfo extends StatelessWidget {
                           icon: Icon(
                             Icons.restart_alt_sharp,
                             color: AppColors.danger,
-                            size: 30,
+                            size: 25,
                           ),
                         ),
                       ],
@@ -322,7 +395,7 @@ class _OrderInfo extends StatelessWidget {
                 // 'Cajas: {$orderProvider.ordersDetail.amount}',
                 'Cajas: ${orderProvider.amountBox}',
                 style: const TextStyle(
-                  fontSize: 18,
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -335,7 +408,7 @@ class _OrderInfo extends StatelessWidget {
                     icon: Icon(
                       Icons.remove_circle,
                       color: AppColors.danger,
-                      size: 30,
+                      size: 25,
                     ),
                   ),
                   IconButton(
@@ -345,7 +418,7 @@ class _OrderInfo extends StatelessWidget {
                     icon: Icon(
                       Icons.add_circle,
                       color: AppColors.success,
-                      size: 30,
+                      size: 25,
                     ),
                   ),
                   IconButton(
@@ -355,98 +428,13 @@ class _OrderInfo extends StatelessWidget {
                     icon: Icon(
                       Icons.restart_alt_sharp,
                       color: AppColors.danger,
-                      size: 30,
+                      size: 25,
                     ),
                   ),
                 ],
               ),
             ],
           ),
-          // orderProvider.product.present! > 1
-          //     ? Row(
-          //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //         children: [
-          //           Text(
-          //             'Presentación: ${orderProvider.product.present}',
-          //             style: const TextStyle(
-          //               fontSize: 18,
-          //               fontWeight: FontWeight.bold,
-          //             ),
-          //           ),
-          //           Row(
-          //             children: [
-          //               IconButton(
-          //                 onPressed: () {},
-          //                 icon: Icon(
-          //                   Icons.remove_circle,
-          //                   color: AppColors.danger,
-          //                   size: 30,
-          //                 ),
-          //               ),
-          //               IconButton(
-          //                 onPressed: () {},
-          //                 icon: Icon(
-          //                   Icons.add_circle,
-          //                   color: AppColors.success,
-          //                   size: 30,
-          //                 ),
-          //               ),
-          //               IconButton(
-          //                 onPressed: () {
-          //                   print(orderProvider.product.present!);
-          //                 },
-          //                 icon: Icon(
-          //                   Icons.restart_alt_sharp,
-          //                   color: AppColors.danger,
-          //                   size: 30,
-          //                 ),
-          //               ),
-          //             ],
-          //           ),
-          //         ],
-          //       )
-          //     : const SizedBox(),
-          // Aqui esta la funcion para las unidades aun no se como aplicarla
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          //   children: [
-          //     const Text(
-          //       'Unidades: 1',
-          //       style: TextStyle(
-          //         fontSize: 18,
-          //         fontWeight: FontWeight.bold,
-          //       ),
-          //     ),
-          //     Row(
-          //       children: [
-          //         IconButton(
-          //           onPressed: () {},
-          //           icon: Icon(
-          //             Icons.remove_circle,
-          //             color: AppColors.danger,
-          //             size: 30,
-          //           ),
-          //         ),
-          //         IconButton(
-          //           onPressed: () {},
-          //           icon: Icon(
-          //             Icons.add_circle,
-          //             color: AppColors.success,
-          //             size: 30,
-          //           ),
-          //         ),
-          //         IconButton(
-          //           onPressed: () {},
-          //           icon: Icon(
-          //             Icons.restart_alt_sharp,
-          //             color: AppColors.danger,
-          //             size: 30,
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //   ],
-          // ),
         ],
       ),
     );

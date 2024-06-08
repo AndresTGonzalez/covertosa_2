@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/design/app_colors.dart';
 import 'package:covertosa_2/models/products.dart';
@@ -31,28 +33,32 @@ class ProductsPage extends StatelessWidget {
       ],
       child: WillPopScope(
         onWillPop: () async {
-          if (!(await orderProvider.hasOrdersToSend())) {
+          if (isCrud) {
             return true;
           } else {
-            // ignore: use_build_context_synchronously
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: const Text('Órdenes pendientes'),
-                content: const Text(
-                    'Tienes órdenes pendientes. No puedes retroceder.'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Aceptar'),
-                  ),
-                ],
-              ),
-            );
-            // Impedir el regreso
-            return false;
+            if (!(orderProvider.hasProductsInOrder())) {
+              return true;
+            } else {
+              // ignore: use_build_context_synchronously
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Órdenes pendientes'),
+                  content: const Text(
+                      'Tienes órdenes pendientes. No puedes retroceder.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Aceptar'),
+                    ),
+                  ],
+                ),
+              );
+              // Impedir el regreso
+              return false;
+            }
           }
         },
         child: _Content(
@@ -68,7 +74,6 @@ class _Content extends StatelessWidget {
   bool isCrud;
 
   _Content({
-    super.key,
     required this.isCrud,
   });
 
@@ -104,7 +109,7 @@ class _Content extends StatelessWidget {
                     label: Text(
                       orderProvider.ordersDetails.length.toString(),
                     ),
-                    backgroundColor: AppColors.successDark,
+                    backgroundColor: AppColors.primary,
                     child: const Icon(Icons.shopping_cart),
                   ),
                 ),
@@ -133,26 +138,129 @@ class _Content extends StatelessWidget {
       body: productProvider.isLoading
           ? Center(
               child: CircularProgressIndicator(
-                color: AppColors.principal,
+                color: AppColors.primary,
               ),
             )
-          : ListView.builder(
-              itemCount: productProvider.products.length,
-              itemBuilder: (context, index) {
-                return _ListTileProducto(
-                  isCrud: isCrud,
-                  productProvider: productProvider,
-                  product: productProvider.products[index],
-                );
-              },
+          : Column(
+              children: [
+                // _CustomerInfo(orderProvider: orderProvider),
+                isCrud
+                    ? Container()
+                    : _CustomerInfo(orderProvider: orderProvider),
+                SizedBox(
+                  height: isCrud
+                      ? MediaQuery.of(context).size.height * 0.888
+                      : MediaQuery.of(context).size.height * 0.765,
+                  width: double.infinity,
+                  child: ListView.builder(
+                    itemCount: productProvider.products.length,
+                    shrinkWrap: true,
+                    itemBuilder: (context, index) {
+                      return _ListTileProducto(
+                        isCrud: isCrud,
+                        productProvider: productProvider,
+                        product: productProvider.products[index],
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
+    );
+  }
+}
+
+class _CustomerInfo extends StatelessWidget {
+  const _CustomerInfo({
+    super.key,
+    required this.orderProvider,
+  });
+
+  final OrderProvider orderProvider;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Row(
+            children: [
+              const Text(
+                'Cliente: ',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.7,
+                child: Text(
+                  '${orderProvider.customer.name}',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Row(
+            children: [
+              const Text(
+                'Identificación: ',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.6,
+                child: Text(
+                  '${orderProvider.customer.document}',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Row(
+            children: [
+              const Text(
+                'Dirección: ',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.6,
+                child: Text(
+                  '${orderProvider.customer.address}',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ),
+              IconButton(
+                onPressed: () async {
+                  await orderProvider.launchGoogleMaps();
+                },
+                icon: const Icon(
+                  Icons.location_on,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Divider(),
+      ],
     );
   }
 }
 
 class _ListTileProducto extends StatelessWidget {
   const _ListTileProducto({
-    super.key,
     required this.isCrud,
     required this.productProvider,
     required this.product,

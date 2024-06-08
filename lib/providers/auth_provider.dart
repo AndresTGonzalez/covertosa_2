@@ -1,20 +1,16 @@
-import 'dart:convert';
+// ignore_for_file: avoid_print
 
-import 'package:covertosa_2/constants.dart';
-import 'package:covertosa_2/local_services/database_helper.dart';
+import 'package:covertosa_2/services/services.dart';
+import 'package:covertosa_2/utils/snackbar_message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-import 'package:http/http.dart' as http;
 
 import '../models/user.dart';
 
 class AuthProvider extends ChangeNotifier {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
   final storage = const FlutterSecureStorage();
-
-  final DatabaseHelper _databaseHelper = DatabaseHelper();
+  final AuthServices _authServices = AuthServices();
 
   String _user = '';
   String _password = '';
@@ -55,21 +51,21 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<User?> login({
-    required bool isOnline,
     required BuildContext context,
   }) async {
+    bool isOnline = await NetworkStatusServices().getNetworkStatus();
     isLoading = true;
     if (!isValidForm()) {
       isLoading = false;
       return null;
     }
     if (isOnline) {
-      final user = await _loginOnline(
+      final user = await _authServices.loginOnline(
         user: _user,
         password: _password,
       );
       if (user != null) {
-        await _registerUser(user);
+        await _authServices.registerUserLocaly(user);
         _isLoading = false;
         notifyListeners();
         try {
@@ -79,24 +75,31 @@ class AuthProvider extends ChangeNotifier {
             name: user.name!,
             id: user.userid!,
           );
-          print('Usuario registrado');
+          debugPrint('Usuario registrado');
         } catch (e) {
           print(e);
         }
+        // ignore: use_build_context_synchronously
+        SnackbarMessage.show(
+          context: context,
+          message: 'Bienvenido ${user.name}',
+          isError: false,
+        );
         return user;
       } else {
         // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Usuario o contraseña incorrectos'),
-          ),
+        SnackbarMessage.show(
+          context: context,
+          message: 'Usuario o contraseña incorrectos',
+          isError: true,
         );
         _isLoading = false;
         notifyListeners();
         return null;
       }
     } else {
-      final user = await _loginOffline(
+      print('Login offline');
+      final user = await _authServices.loginOffline(
         user: _user,
         password: _password,
       );
@@ -116,71 +119,19 @@ class AuthProvider extends ChangeNotifier {
         return user;
       } else {
         // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Usuario o contraseña incorrectos'),
-          ),
+        SnackbarMessage.show(
+          context: context,
+          message: 'Usuario o contraseña incorrectos',
+          isError: true,
         );
         _isLoading = false;
         notifyListeners();
         return null;
       }
     }
-  }
-
-  Future<User?> _loginOnline({
-    required String user,
-    required String password,
-  }) async {
-    try {
-      final resp = await http.post(Uri.parse(LOGIN_URL), body: {
-        'email': user,
-        'password': password,
-      });
-      final Map<String, dynamic> responseJSON = json.decode(resp.body);
-      if (responseJSON['status'] == "ok") {
-        final Map<String, dynamic> userData = responseJSON['data'];
-        final fin = User.fromJson(userData);
-
-        User userReturn = User(
-          userid: fin.userid,
-          email: user,
-          password: password,
-          name: fin.name,
-          surname: fin.surname,
-        );
-        return userReturn;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      return null;
-    }
-  }
-
-  Future<User?> _loginOffline({
-    required String user,
-    required String password,
-  }) async {
-    var dbClient = await _databaseHelper.db;
-    var res = await dbClient.rawQuery(
-        "SELECT * FROM users WHERE email = '$user' and password = '$password'");
-
-    if (res.isNotEmpty) {
-      return User.fromJson(res.first);
-    } else {
-      return null;
-    }
-  }
-
-  Future<int> _registerUser(User user) async {
-    var dbClient = await _databaseHelper.db;
-    int res = await dbClient.insert("users", user.toJson());
-    return res;
   }
 
   // Manejo de la sesion
-
   Future<void> _loginStorage({
     required String user,
     required String password,

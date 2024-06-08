@@ -3,7 +3,6 @@
 import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/design/app_colors.dart';
 import 'package:covertosa_2/models/customers.dart';
-import 'package:covertosa_2/providers/customers_provider.dart';
 import 'package:covertosa_2/providers/providers.dart';
 import 'package:covertosa_2/search/search_delegate_customers.dart';
 import 'package:flutter/material.dart';
@@ -22,9 +21,6 @@ class CustomersPage extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => CustomersProvider(),
-        ),
-        ChangeNotifierProvider(
           create: (_) => SyncProvider(),
         ),
       ],
@@ -37,7 +33,6 @@ class _Content extends StatelessWidget {
   bool isCrud;
 
   _Content({
-    super.key,
     required this.isCrud,
   });
 
@@ -48,18 +43,20 @@ class _Content extends StatelessWidget {
     final orderProvider = Provider.of<OrderProvider>(context);
 
     return Scaffold(
-      floatingActionButton: isCrud
-          ? FloatingActionButton(
-              onPressed: () {
-                Navigator.pushNamed(
-                  context,
-                  CUSTOMER_PAGE_ROUTE,
-                  arguments: Customers(),
-                );
-              },
-              child: const Icon(Icons.add),
-            )
-          : null,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.primary,
+        onPressed: () {
+          Navigator.pushNamed(
+            context,
+            CUSTOMER_PAGE_ROUTE,
+            arguments: Customers(),
+          );
+        },
+        child: Icon(
+          Icons.add,
+          color: AppColors.white,
+        ),
+      ),
       appBar: AppBar(
         title: const Text('Clientes'),
         actions: [
@@ -88,7 +85,7 @@ class _Content extends StatelessWidget {
       body: customersProvider.isLoading
           ? Center(
               child: CircularProgressIndicator(
-                color: AppColors.principal,
+                color: AppColors.primary,
               ),
             )
           : ListView.builder(

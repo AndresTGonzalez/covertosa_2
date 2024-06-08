@@ -1,6 +1,7 @@
 import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/design/design.dart';
 import 'package:covertosa_2/models/user.dart';
+import 'package:covertosa_2/validators/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -83,7 +84,6 @@ class LoginPage extends StatelessWidget {
 
 class _NetworkStatus extends StatelessWidget {
   const _NetworkStatus({
-    super.key,
     required this.width,
   });
 
@@ -123,12 +123,11 @@ class _NetworkStatus extends StatelessWidget {
 }
 
 class _LoginForm extends StatelessWidget {
-  const _LoginForm({super.key});
+  const _LoginForm();
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
-    final networkStatusProvider = Provider.of<NetworkStatusProvider>(context);
 
     return Form(
       autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -146,12 +145,9 @@ class _LoginForm extends StatelessWidget {
               prefixIcon: Icons.person,
             ),
             validator: (value) {
-              String pattern =
-                  r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
-              RegExp regExp = RegExp(pattern);
-              return regExp.hasMatch(value ?? '')
+              return FormValidator.emailValidator(value!)
                   ? null
-                  : 'Por favor ingrese un correo válido';
+                  : 'Por favor ingrese un email válido';
             },
           ),
           const SizedBox(height: 20),
@@ -177,7 +173,6 @@ class _LoginForm extends StatelessWidget {
           FilledButton(
             onPressed: () async {
               User? user = await authProvider.login(
-                isOnline: networkStatusProvider.isOnline,
                 context: context,
               );
               if (user != null) {
@@ -186,7 +181,7 @@ class _LoginForm extends StatelessWidget {
               }
             },
             style: FilledButton.styleFrom(
-              backgroundColor: AppColors.secondary,
+              backgroundColor: AppColors.primary,
             ),
             child: Container(
               width: double.infinity,

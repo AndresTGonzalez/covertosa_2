@@ -55,17 +55,17 @@ class Customers {
       );
 
   Map<String, dynamic> toJson() => {
-        'id': this.id,
-        'address': this.address,
-        'cod': this.cod,
-        'tradename': this.tradename,
-        'document': this.document,
-        'email': this.email,
-        'lastname': this.lastname,
-        'name': this.name,
-        'phone': this.phone,
-        'route': this.route,
-        'lat': this.lat,
-        'lng': this.lng,
+        'id': id,
+        'address': address,
+        'cod': cod,
+        'tradename': tradename,
+        'document': document,
+        'email': email,
+        'lastname': lastname,
+        'name': name,
+        'phone': phone,
+        'route': route,
+        'lat': lat,
+        'lng': lng,
       };
 }

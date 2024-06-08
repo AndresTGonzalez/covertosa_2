@@ -2,6 +2,8 @@ import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/design/design.dart';
 import 'package:covertosa_2/models/customers.dart';
 import 'package:covertosa_2/providers/customers_provider.dart';
+import 'package:covertosa_2/utils/snackbar_message.dart';
+import 'package:covertosa_2/validators/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -12,16 +14,12 @@ class CustomerPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final Customers customer =
         ModalRoute.of(context)!.settings.arguments as Customers;
-    return ChangeNotifierProvider(
-      child: _Content(customer: customer),
-      create: (_) => CustomersProvider(),
-    );
+    return _Content(customer: customer);
   }
 }
 
 class _Content extends StatelessWidget {
   const _Content({
-    super.key,
     required this.customer,
   });
 
@@ -35,7 +33,6 @@ class _Content extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: customer.id == null
             ? () async {
-                // await customerProvider.sendCustomer(customer);
                 await customerProvider.addCustomer(
                   customer,
                 );
@@ -44,12 +41,18 @@ class _Content extends StatelessWidget {
                 // ignore: use_build_context_synchronously
                 Navigator.pop(context);
                 // ignore: use_build_context_synchronously
-                Navigator.pushReplacementNamed(context, CUSTOMERS_ROUTE);
+                if (customerProvider.stayInOrder) {
+                  // ignore: use_build_context_synchronously
+                  Navigator.pushReplacementNamed(context, CUSTOMERS_ROUTE_NC);
+                } else {
+                  // ignore: use_build_context_synchronously
+                  Navigator.pushReplacementNamed(context, CUSTOMERS_ROUTE);
+                }
                 // ignore: use_build_context_synchronously
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Cliente creado con éxito'),
-                  ),
+                SnackbarMessage.show(
+                  context: context,
+                  message: 'Cliente creado con éxito',
+                  isError: false,
                 );
               }
             : () async {
@@ -63,16 +66,16 @@ class _Content extends StatelessWidget {
                 // ignore: use_build_context_synchronously
                 Navigator.pushReplacementNamed(context, CUSTOMERS_ROUTE);
                 // ignore: use_build_context_synchronously
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Cliente actualizado con éxito'),
-                  ),
+                SnackbarMessage.show(
+                  context: context,
+                  message: 'Cliente actualizado con éxito',
+                  isError: false,
                 );
               },
-        backgroundColor: AppColors.tertiary,
+        backgroundColor: AppColors.primary,
         child: customerProvider.isLoading
-            ? const CircularProgressIndicator(
-                color: Colors.white,
+            ? CircularProgressIndicator(
+                color: AppColors.white,
               )
             : const Icon(
                 Icons.save,
@@ -84,10 +87,10 @@ class _Content extends StatelessWidget {
             ? const Text('Nuevo cliente')
             : Text(customer.name!),
         actions: [
-          IconButton(
-            onPressed: customer.id == null
-                ? null
-                : () {
+          customer.id == null
+              ? Container()
+              : IconButton(
+                  onPressed: () {
                     customerProvider.deleteCustomerLocal(customer.id!);
                     Navigator.pop(context);
                     // ignore: use_build_context_synchronously
@@ -98,12 +101,12 @@ class _Content extends StatelessWidget {
                       ),
                     );
                   },
-            icon: const Icon(
-              Icons.delete,
-              // color: AppColors.danger,
-              size: 30,
-            ),
-          ),
+                  icon: const Icon(
+                    Icons.delete,
+                    // color: AppColors.danger,
+                    size: 30,
+                  ),
+                ),
         ],
       ),
       body: SingleChildScrollView(
@@ -128,28 +131,16 @@ class _Content extends StatelessWidget {
                 child: Column(
                   children: [
                     TextFormField(
-                      initialValue: customer.cod,
-                      enabled: customer.id == null,
-                      onChanged: (value) => customer.cod = value,
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Ingrese el código';
-                        }
-                        return null;
-                      },
-                      decoration: InputsDeocrations.textFormDecoration(
-                          labelText: 'Código', hintText: 'Ingrese el código'),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    TextFormField(
                       initialValue: customer.document,
                       enabled: customer.id == null,
                       onChanged: (value) => customer.document = value,
                       validator: (value) {
                         if (value!.isEmpty) {
                           return 'Ingrese la cedula';
+                        }
+                        if (!DocumentValidator.identificationCardValidator(
+                            value)) {
+                          return 'Cédula incorrecta';
                         }
                         return null;
                       },
@@ -182,6 +173,7 @@ class _Content extends StatelessWidget {
                     TextFormField(
                       initialValue: customer.phone,
                       onChanged: (value) => customer.phone = value,
+                      keyboardType: TextInputType.phone,
                       decoration: InputsDeocrations.textFormDecoration(
                           labelText: 'Teléfono',
                           hintText: 'Ingrese el teléfono'),
@@ -202,6 +194,16 @@ class _Content extends StatelessWidget {
                     TextFormField(
                       initialValue: customer.email,
                       onChanged: (value) => customer.email = value,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Ingrese el email';
+                        }
+                        if (!FormValidator.emailValidator(value)) {
+                          return 'Email incorrecto';
+                        }
+                        return null;
+                      },
                       decoration: InputsDeocrations.textFormDecoration(
                           labelText: 'Email', hintText: 'Ingrese el email'),
                     ),

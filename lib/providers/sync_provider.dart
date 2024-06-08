@@ -1,5 +1,3 @@
-// import 'dart:convert';
-
 import 'package:covertosa_2/constants.dart';
 import 'package:covertosa_2/local_services/database_helper.dart';
 import 'package:covertosa_2/models/customers.dart';
@@ -121,18 +119,6 @@ class SyncProvider extends ChangeNotifier {
     var dbClient = await _databaseHelper.db;
     var res = await dbClient.insert("products", product.toJson());
     return res;
-  }
-
-  Future<bool> _clearLocalDB() async {
-    if (await _clearLocalRoutes() &&
-        await _clearLocalCustomers() &&
-        await _clearLocalProducts()) {
-      isLoading = false;
-      return true;
-    } else {
-      isLoading = false;
-      return false;
-    }
   }
 
   // Metodo para limpiar las rutas de la base local

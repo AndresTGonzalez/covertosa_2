@@ -1,17 +1,16 @@
-import 'dart:convert';
-
 import 'package:covertosa_2/constants.dart';
-import 'package:covertosa_2/local_services/database_helper.dart';
 import 'package:covertosa_2/models/customers.dart';
 import 'package:covertosa_2/models/orders.dart';
 import 'package:covertosa_2/models/products.dart';
+import 'package:covertosa_2/models/trade_routes.dart';
+import 'package:covertosa_2/services/services.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:location/location.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:uuid/uuid.dart';
 
 class OrderProvider extends ChangeNotifier {
-  final DatabaseHelper _databaseHelper = DatabaseHelper();
+  final NetworkStatusServices _networkStatusServices = NetworkStatusServices();
+  final OrderServices _orderServices = OrderServices();
 
   Customers _customer = Customers();
   Orders _order = Orders();
@@ -20,7 +19,13 @@ class OrderProvider extends ChangeNotifier {
   Products _product = Products();
   int _amountBox = 0;
   int _amountUnits = 0;
+  int _totalAmount = 0;
   bool _isLoading = false;
+  List<TradeRoutes> _tradeRoutes = [];
+  TradeRoutes _tradeRoute = TradeRoutes();
+  final DateTime _date = DateTime.now();
+  String _todayDate = '';
+
   // Getters
   Customers get customer => _customer;
   Orders get order => _order;
@@ -29,26 +34,15 @@ class OrderProvider extends ChangeNotifier {
   Products get product => _product;
   int get amountBox => _amountBox;
   int get amountUnits => _amountUnits;
+  int get totalAmount => _totalAmount;
   bool get isLoading => _isLoading;
+  List<TradeRoutes> get tradeRoutes => _tradeRoutes;
+  TradeRoutes get tradeRoute => _tradeRoute;
+  String get todayDate => _todayDate;
 
   // Setters
   set customer(Customers value) {
     _customer = value;
-    notifyListeners();
-  }
-
-  set order(Orders value) {
-    _order = value;
-    notifyListeners();
-  }
-
-  set ordersDetails(List<OrdersDetails> value) {
-    _ordersDetails = value;
-    notifyListeners();
-  }
-
-  set ordersDetail(OrdersDetails value) {
-    _ordersDetail = value;
     notifyListeners();
   }
 
@@ -57,54 +51,72 @@ class OrderProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  set amountBox(int value) {
-    _amountBox = value;
+  set tradeRoute(TradeRoutes value) {
+    _tradeRoute = value;
     notifyListeners();
   }
 
-  set amountUnits(int value) {
-    _amountUnits = value;
+  // Metodos para manejar la ruta
+  // Obtener las rutas de la base de datos interna
+  Future getTradeRoutes() async {
+    _tradeRoutes = await _orderServices.getTradeRoutesLocally();
+    _getTodayDate();
     notifyListeners();
   }
 
-  set isLoading(bool value) {
-    _isLoading = value;
-    notifyListeners();
+  void _getTodayDate() {
+    _todayDate = '${_date.day}-${_date.month}-${_date.year}';
   }
 
   // Metodos para manejar las cantidades de la orden
   void addBoxToOrder() {
     _amountBox = _amountBox + 1;
+    _totalAmount = (_amountBox * _product.present!) + _amountUnits;
     notifyListeners();
   }
 
   void removeBoxToOrder() {
-    if (_amountBox > 1) {
+    if (_amountBox > 0) {
       _amountBox = _amountBox - 1;
-      // _amountUnits = _amountBox * _product.present!;
+      _totalAmount = _amountBox * _product.present!;
       notifyListeners();
     }
   }
 
   void resetBoxQuantity() {
     _amountBox = 0;
+    _totalAmount = (_amountBox * _product.present!) + _amountUnits;
     notifyListeners();
   }
 
   void addUnitsToOrder() {
     _amountUnits = _amountUnits + 1;
+    _totalAmount = _totalAmount + 1;
     notifyListeners();
   }
 
   void removeUnitsToOrder() {
-    if (_amountUnits > 1) {
+    if (_amountUnits > 0) {
       _amountUnits = _amountUnits - 1;
+      _totalAmount = _totalAmount - 1;
       notifyListeners();
     }
   }
 
   void resetUnitsQuantity() {
     _amountUnits = 0;
+    if (_amountBox == 0) {
+      _totalAmount = _amountUnits;
+    } else {
+      _totalAmount = _amountBox * _product.present!;
+    }
+    notifyListeners();
+  }
+
+  void resetValues() {
+    _amountBox = 0;
+    _amountUnits = 0;
+    _totalAmount = 0;
     notifyListeners();
   }
 
@@ -115,10 +127,12 @@ class OrderProvider extends ChangeNotifier {
     _order.process = 0;
     _order.phone_customer = _customer.phone;
     _order.route = _customer.route.toString();
-    _order.identificator = _customer.document;
     _order.subtotal = 0;
     _order.iva = 0;
     _order.total = 0;
+    var uuid = const Uuid();
+    String newOrderId = uuid.v4();
+    _order.identificator = newOrderId;
   }
 
   void inicializateOrderDetail({required int amount}) {
@@ -155,7 +169,6 @@ class OrderProvider extends ChangeNotifier {
   // Metodos para manejar la orden
   Future createOrder() async {
     _createOrderInMemory();
-    await _createLocalOrder();
   }
 
   Future createOrderDetail({required int amountBox}) async {
@@ -165,22 +178,11 @@ class OrderProvider extends ChangeNotifier {
     _addOrderDetailMemory();
     resetBoxQuantity();
     resetUnitsQuantity();
-    await _createLocalOrderDetail();
   }
 
   void _addOrderDetailMemory() async {
     _ordersDetail.tosend = 1;
     _ordersDetails.add(_ordersDetail);
-  }
-
-  Future _clearOrders() async {
-    var dbClient = await _databaseHelper.db;
-    await dbClient.delete('orders');
-  }
-
-  Future _clearOrdersDetails() async {
-    var dbClient = await _databaseHelper.db;
-    await dbClient.delete('order_details');
   }
 
   void _calculateOrderDetailTotals() {
@@ -210,137 +212,118 @@ class OrderProvider extends ChangeNotifier {
     _order.total = _order.total! + _ordersDetail.total!;
   }
 
-  /* 
-  Metodos para manejar la logica en la base de datos local
-  */
-  Future _createLocalOrder() async {
-    _clearOrders();
-    var dbClient = await _databaseHelper.db;
-    await dbClient.insert(
-      'orders',
-      _order.toJson(),
-    );
-    List<Map<String, dynamic>> order = await dbClient.rawQuery(
-      'SELECT id FROM orders WHERE code_customer = ?',
-      [_order.code_customer],
-    );
-    _order.id = order[0]['id'];
-  }
-
-  Future _createLocalOrderDetail() async {
-    _clearOrdersDetails();
-    var dbClient = await _databaseHelper.db;
-    dynamic resp = await dbClient.insert(
-      'order_details',
-      _ordersDetail.toJson(),
-    );
-    _ordersDetail.id = resp;
-  }
-
-  Future clearLocalOrders() async {
-    _clearOrders();
-    _clearOrdersDetails();
-  }
-
-  /* 
-  Metodos para manejar la logicas en la base de datos remota
-  */
-
-  // Primero obtener el location
-  Future<LocationData?> _getLocation() async {
-    Location location = Location();
-    bool serviceEnabled;
-    PermissionStatus permissionGranted;
-    LocationData locationData;
-    serviceEnabled = await location.serviceEnabled();
-    if (!serviceEnabled) {
-      serviceEnabled = await location.requestService();
-      if (!serviceEnabled) {
-        return null;
-      }
+  bool hasProductsInOrder() {
+    if (_ordersDetails.isEmpty) {
+      return false;
+    } else {
+      return true;
     }
-    permissionGranted = await location.hasPermission();
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await location.requestPermission();
-      if (permissionGranted != PermissionStatus.granted) {
-        return null;
-      }
+  }
+
+  void addAmountToDetail({required int index}) {
+    num subtotal = _ordersDetails[index].subtotal!;
+    num iva = _ordersDetails[index].iva!;
+    num total = _ordersDetails[index].total!;
+    bool taxeable = true;
+
+    if (_ordersDetails[index].iva! > 0) {
+      taxeable = true;
+    } else {
+      taxeable = false;
     }
-    locationData = await location.getLocation();
-    return locationData;
+    _ordersDetails[index].amount = _ordersDetails[index].amount! + 1;
+    _order.subtotal = _order.subtotal! - subtotal;
+    _order.iva = _order.iva! - iva;
+    _order.total = _order.total! - total;
+    _ordersDetails[index].subtotal =
+        _ordersDetails[index].amount! * _ordersDetails[index].price!;
+    if (taxeable) {
+      _ordersDetails[index].iva =
+          _ordersDetails[index].subtotal! * (IVA_VALUE / 100);
+    } else {
+      _ordersDetails[index].iva = 0;
+    }
+    _ordersDetails[index].total =
+        _ordersDetails[index].subtotal! + _ordersDetails[index].iva!;
+    _order.subtotal = _order.subtotal! + _ordersDetails[index].subtotal!;
+    _order.iva = _order.iva! + _ordersDetails[index].iva!;
+    _order.total = _order.total! + _ordersDetails[index].total!;
+    _order.total = _order.subtotal! + _order.iva!;
+
+    notifyListeners();
+  }
+
+  void removeAmountToDetail({required int index}) {
+    num subtotal = _ordersDetails[index].subtotal!;
+    num iva = _ordersDetails[index].iva!;
+    num total = _ordersDetails[index].total!;
+    bool taxeable = true;
+
+    if (_ordersDetails[index].amount! > 1) {
+      if (_ordersDetails[index].iva! > 0) {
+        taxeable = true;
+      } else {
+        taxeable = false;
+      }
+      _ordersDetails[index].amount = _ordersDetails[index].amount! - 1;
+      _order.subtotal = _order.subtotal! - subtotal;
+      _order.iva = _order.iva! - iva;
+      _order.total = _order.total! - total;
+      _ordersDetails[index].subtotal =
+          _ordersDetails[index].amount! * _ordersDetails[index].price!;
+      if (taxeable) {
+        _ordersDetails[index].iva =
+            _ordersDetails[index].subtotal! * (IVA_VALUE / 100);
+      } else {
+        _ordersDetails[index].iva = 0;
+      }
+      _ordersDetails[index].total =
+          _ordersDetails[index].subtotal! + _ordersDetails[index].iva!;
+      _order.subtotal = _order.subtotal! + _ordersDetails[index].subtotal!;
+      _order.iva = _order.iva! + _ordersDetails[index].iva!;
+      _order.total = _order.total! + _ordersDetails[index].total!;
+      _order.total = _order.subtotal! + _order.iva!;
+
+      notifyListeners();
+    }
   }
 
   Future sendOrder() async {
     _isLoading = true;
     notifyListeners();
-    LocationData? locationData = await _getLocation();
-    _order.lat = locationData!.latitude.toString();
-    _order.lng = locationData.longitude.toString();
-    Map<String, dynamic> toData = {
-      'code_customer': _order.code_customer,
-      'date_order': _order.date_order,
-      'process': _order.process,
-      'phone_customer': _order.phone_customer,
-      'route': _order.route,
-      'identificator': _order.identificator,
-      'subtotal': _order.subtotal,
-      'iva': _order.iva,
-      'total': _order.total,
-      'lat': _order.lat,
-      'lng': _order.lng,
-    };
-    List orderToSend = [];
-    orderToSend.add(Orders.fromJson(toData));
-    List details = [];
-    _ordersDetails.map((item) => details.add(item.toJson())).toList();
-    const storage = FlutterSecureStorage();
-    final int? id =
-        await storage.read(key: 'id').then((value) => int.parse(value!));
-    List<Orders> orders = [];
-    orders.add(_order);
-    List ordersDetails = [];
-    for (var element in _ordersDetails) {
-      ordersDetails.add(element.toJson());
-    }
-    final response = await http.post(
-      Uri.parse(POST_ORDERS),
-      body: json
-          .encode({"seller_id": id, "order": orderToSend, "details": details}),
-      headers: {
-        'Content-type': 'application/json',
-        'Accept': 'application/json'
-      },
-    );
+    _order.route = _tradeRoute.code;
 
-    if (response.statusCode == 200) {
-      _ordersDetails = [];
-      // Actualizar el estado de la orden en la base de datos local
-      var dbClient = await _databaseHelper.db;
-      await dbClient.update(
-        'orders',
-        {'process': 1},
-        where: 'id = ?',
-        whereArgs: [_order.id],
+    bool hasInternet = await _networkStatusServices.getNetworkStatus();
+    if (hasInternet) {
+      await _orderServices.sendOrderToServer(
+        order: _order,
+        orderDetails: _ordersDetails,
       );
     } else {
-      // Mostrar un mensaje de error con un snackbar
+      await _orderServices.saveOrderLocally(_order);
+      await _orderServices.saveOrderDetailsLocally(_ordersDetails);
+    }
+    _order = Orders();
+    _ordersDetails = [];
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future sendLocalOrders() async {
+    _isLoading = true;
+    notifyListeners();
+    bool hasInternet = await _networkStatusServices.getNetworkStatus();
+    if (hasInternet) {
+      await _orderServices.sendLocalOrdersToServer();
     }
     _isLoading = false;
     notifyListeners();
   }
 
-  // Metodo booleano para verificar si hay ordenes con estado cero
-  Future<bool> hasOrdersToSend() async {
-    var dbClient = await _databaseHelper.db;
-    List<Map<String, dynamic>> orders = await dbClient.query(
-      'orders',
-      where: 'process = ?',
-      whereArgs: [0],
-    );
-    if (orders.isEmpty) {
-      return false;
-    } else {
-      return true;
-    }
+  // Metodo para lanzar Google Maps con la ubicaion del cliente
+  Future launchGoogleMaps() async {
+    Uri url = Uri.parse(
+        'geo:${_customer.lat},${_customer.lng}?q=${_customer.lat},${_customer.lng}');
+    launchUrl(url);
   }
 }

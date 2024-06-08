@@ -49,13 +49,13 @@ class Products {
       );
 
   Map<String, dynamic> toJson() => {
-        'id': this.id,
-        'code': this.code,
-        'shortname': this.shortname,
-        'price': this.price,
-        'category': this.category,
-        'taxable': this.taxable,
-        'stock': this.stock,
-        'present': this.present,
+        'id': id,
+        'code': code,
+        'shortname': shortname,
+        'price': price,
+        'category': category,
+        'taxable': taxable,
+        'stock': stock,
+        'present': present,
       };
 }
